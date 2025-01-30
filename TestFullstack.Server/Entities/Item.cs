@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TestFullstack.Server.Models
+namespace TestFullstack.Server.Entities
 {
     public class Item
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace TestFullstack.Server.Models
+namespace TestFullstack.Server.Entities
 {
     public class ApplicationUser : IdentityUser
     {

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using TestFullstack.Server.Entities;
 
 namespace TestFullstack.Server.Services.Users
 {
@@ -12,6 +15,11 @@ namespace TestFullstack.Server.Services.Users
         public UserService(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
+        }
+
+        public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user)
+        {
+            return await _userManager.GetUserAsync(user);
         }
 
         public async Task<List<ApplicationUser>> GetAllUsersAsync()

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using TestFullstack.Server.Entities;
 using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Services.Users
@@ -12,5 +14,6 @@ namespace TestFullstack.Server.Services.Users
         Task<IdentityResult> UpdateUserAsync(string userId, UpdateUserModel model);
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
         Task<IdentityResult> DeleteUserAsync(string userId);
+        Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user);
     }
 }

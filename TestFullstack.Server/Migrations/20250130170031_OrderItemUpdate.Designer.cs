@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestFullstack.Server.Data;
 
@@ -11,9 +12,11 @@ using TestFullstack.Server.Data;
 namespace TestFullstack.Server.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250130170031_OrderItemUpdate")]
+    partial class OrderItemUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,7 +172,7 @@ namespace TestFullstack.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -241,7 +244,7 @@ namespace TestFullstack.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Customer", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -266,7 +269,7 @@ namespace TestFullstack.Server.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Item", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,7 +296,7 @@ namespace TestFullstack.Server.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Order", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -305,13 +308,14 @@ namespace TestFullstack.Server.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("OrderNumber")
+                    b.Property<int>("OrderNumber")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ShipmentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -321,7 +325,7 @@ namespace TestFullstack.Server.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.OrderItem", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -359,7 +363,7 @@ namespace TestFullstack.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.ApplicationUser", null)
+                    b.HasOne("TestFullstack.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -368,7 +372,7 @@ namespace TestFullstack.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.ApplicationUser", null)
+                    b.HasOne("TestFullstack.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -383,7 +387,7 @@ namespace TestFullstack.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TestFullstack.Server.Entities.ApplicationUser", null)
+                    b.HasOne("TestFullstack.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -392,26 +396,26 @@ namespace TestFullstack.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.ApplicationUser", null)
+                    b.HasOne("TestFullstack.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.Customer", "Customer")
+                    b.HasOne("TestFullstack.Server.Models.Customer", "Customer")
                         .WithOne("User")
-                        .HasForeignKey("TestFullstack.Server.Entities.ApplicationUser", "CustomerId")
+                        .HasForeignKey("TestFullstack.Server.Models.ApplicationUser", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Order", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Order", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.Customer", "Customer")
+                    b.HasOne("TestFullstack.Server.Models.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,15 +424,15 @@ namespace TestFullstack.Server.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.OrderItem", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.OrderItem", b =>
                 {
-                    b.HasOne("TestFullstack.Server.Entities.Item", "Item")
+                    b.HasOne("TestFullstack.Server.Models.Item", "Item")
                         .WithMany("OrderItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TestFullstack.Server.Entities.Order", "Order")
+                    b.HasOne("TestFullstack.Server.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -439,7 +443,7 @@ namespace TestFullstack.Server.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Customer", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
 
@@ -447,12 +451,12 @@ namespace TestFullstack.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Item", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Item", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("TestFullstack.Server.Entities.Order", b =>
+            modelBuilder.Entity("TestFullstack.Server.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });

@@ -6,6 +6,8 @@ import Cart from '../views/CartView.vue';
 import ManagerDashboard from "../views/admin/ManagerDashboard.vue";
 import Users from "../views/admin/UsersView.vue";
 import Items from "../views/admin/ItemsView.vue";
+import Orders from '../views/OrdersView.vue';
+
 import { useUserStore } from "../stores/user"; 
 
 
@@ -15,6 +17,7 @@ const routes = [
   { path: '/customers', component: Customers },
   { path: '/register', component: Register },
   { path: '/cart', component: Cart },
+  { path: '/orders', component: Orders, meta: { requiresAuth: true } },
   { path: '/admin', component: ManagerDashboard, meta: { requiresManager: true } },
   { path: '/admin/users', component: Users, meta: { requiresManager: true } },
   { path: '/admin/items', component: Items, meta: { requiresManager: true } }

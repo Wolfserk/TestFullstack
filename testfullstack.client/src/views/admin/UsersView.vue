@@ -31,7 +31,6 @@
       </tbody>
     </table>
 
-    <!-- Модальное окно для добавления пользователя -->
     <UsersModal v-if="isAddModalOpen"
                 :isOpen="isAddModalOpen"
                 title="Добавить пользователя"
@@ -52,13 +51,10 @@
         <input type="password"
                v-model="newUser.password"
                class="w-full p-2 mb-4 border border-gray-300 rounded-lg" />
-        <!--<input type="password"
-               v-model="newUser.confirmPassword"
-               class="w-full p-2 mb-4 border border-gray-300 rounded-lg" />-->
       </form>
     </UsersModal>
 
-    <!-- Модальное окно для редактирования пользователя -->
+
     <UsersModal v-if="isEditModalOpen"
                 :isOpen="isEditModalOpen"
                 title="Редактировать пользователя"
@@ -98,11 +94,10 @@
       const newUser = ref({ email: "", password: "", confirmPassword: "", role: "Customer" });
       const editUser = ref({ id: "", email: "", role: "" });
 
-      // Проверяем, является ли пользователь менеджером
       const isManager = ref(userStore.role === "Manager");
 
       const fetchUsers = async () => {
-        if (!isManager.value) return; // Если пользователь не менеджер, данные не загружаются
+        if (!isManager.value) return;
         try {
           const response = await axios.get("https://localhost:7034/api/users", {
             headers: { Authorization: `Bearer ${userStore.token}` },

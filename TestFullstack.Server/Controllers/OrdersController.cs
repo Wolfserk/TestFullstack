@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TestFullstack.Server.Entities;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Orders;
+using TestFullstack.Server.Services.Users;
 
 namespace TestFullstack.Server.Controllers
 {
@@ -11,16 +14,31 @@ namespace TestFullstack.Server.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, IUserService userService)
         {
             _orderService = orderService;
+            _userService = userService;
         }
-
         [HttpGet]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAll()
         {
             var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+
+        [HttpGet("myorders")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetAllUserOrders()
+        {
+            var user = await _userService.GetUserAsync(User);
+
+            if (user == null || user.CustomerId == null)
+                return BadRequest("Пользователь не привязан к заказчику.");
+
+            var orders = await _orderService.GetAllUserOrdersAsync((Guid)user.CustomerId);
             return Ok(orders);
         }
 
@@ -35,41 +53,27 @@ namespace TestFullstack.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Order order)
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> Create([FromBody] OrderRequestModel model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (model.Items == null || !model.Items.Any())
+                return BadRequest("Заказ не может быть пустым.");
 
-            await _orderService.AddOrderAsync(order);
-            return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
-        }
+            var user = await _userService.GetUserAsync(User);
+            if (user == null || user.CustomerId == null)
+                return BadRequest("Пользователь не привязан к заказчику.");
 
+            var orderItems = model.Items.Select(i => new OrderItem
+            {
+                Id = Guid.NewGuid(),
+                ItemId = i.ItemId,
+                ItemsCount = i.Quantity,
+                ItemPrice = i.Price
+            }).ToList();
 
-        [HttpPost("{id}/confirm")]
-        [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> ConfirmOrder(Guid id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null) return NotFound("Order not found");
+            var order = await _orderService.PlaceOrderAsync((Guid)user.CustomerId, orderItems);
 
-            order.Status = "Выполняется";
-            order.ShipmentDate = DateTime.Now.AddDays(3); // Условная дата доставки
-            await _orderService.UpdateOrderAsync(order);
-
-            return Ok("Order confirmed");
-        }
-
-        [HttpPost("{id}/complete")]
-        [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> CompleteOrder(Guid id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null) return NotFound("Order not found");
-
-            order.Status = "Выполнен";
-            await _orderService.UpdateOrderAsync(order);
-
-            return Ok("Order completed");
+            return Ok(new { message = "Заказ успешно создан!", orderId = order.Id });
         }
 
         [HttpDelete("{id}")]
@@ -84,37 +88,6 @@ namespace TestFullstack.Server.Controllers
 
             await _orderService.DeleteOrderAsync(id);
             return Ok("Order deleted");
-        }
-
-
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Order updatedOrder)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
-                return NotFound("Заказ не найден");
-
-            order.Status = updatedOrder.Status;
-            order.ShipmentDate = updatedOrder.ShipmentDate;
-            await _orderService.UpdateOrderAsync(order);
-
-            return Ok(new { message = "Заказ обновлен", order });
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
-                return NotFound("Заказ не найден");
-
-            if (order.Status != "Новый")
-                return BadRequest("Удалять можно только заказы со статусом 'Новый'");
-
-            await _orderService.DeleteOrderAsync(id);
-            return Ok(new { message = "Заказ удален" });
         }
     }
 }

@@ -34,6 +34,7 @@
   import { defineComponent, ref } from "vue";
   import axios from "axios";
   import { useUserStore } from "../stores/user";
+  import { useCartStore } from "../stores/cart";
   import { useRouter } from "vue-router";
 
   export default defineComponent({
@@ -45,6 +46,7 @@
       const password = ref("");
       const errorMessage = ref("");
       const userStore = useUserStore();
+      const cartStore = useCartStore();
       const router = useRouter();
 
       const login = async () => {
@@ -62,6 +64,8 @@
           } else if (!customerId) {
             emit("openCustomerModal", id);
           } else {
+            cartStore.loadCart();
+            console.log("Загружена корзина:", cartStore.cart);
             router.push("/");
           }
           emit("close");

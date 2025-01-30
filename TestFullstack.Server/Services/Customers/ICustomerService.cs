@@ -1,4 +1,4 @@
-﻿using TestFullstack.Server.Models;
+﻿using TestFullstack.Server.Entities;
 
 namespace TestFullstack.Server.Services.Customers
 {
@@ -6,7 +6,7 @@ namespace TestFullstack.Server.Services.Customers
     {
         Task<List<Customer>> GetAllCustomersAsync();
         Task<Customer> GetCustomerByCodeAsync(string code);
-        Task<Customer> AddCustomerAsync(string name, string address, string userId);
+        Task<Customer> AddCustomerAsync(string name, string? address, string userId);
 
 
     }

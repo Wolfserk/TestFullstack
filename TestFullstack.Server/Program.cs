@@ -4,12 +4,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 using TestFullstack.Server.Data;
-using TestFullstack.Server.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using TestFullstack.Server.Services.Customers;
 using TestFullstack.Server.Services.Items;
 using TestFullstack.Server.Services.Orders;
 using TestFullstack.Server.Services.Users;
+using TestFullstack.Server.Entities;
 
 
 namespace TestFullstack.Server

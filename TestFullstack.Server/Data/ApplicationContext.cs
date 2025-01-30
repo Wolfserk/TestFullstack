@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TestFullstack.Server.Models;
-
+using TestFullstack.Server.Entities;
 
 namespace TestFullstack.Server.Data
 {
