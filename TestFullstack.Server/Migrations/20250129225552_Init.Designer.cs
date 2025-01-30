@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestFullstack.Server.Data;
 
@@ -11,9 +12,11 @@ using TestFullstack.Server.Data;
 namespace TestFullstack.Server.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250129225552_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,12 +335,23 @@ namespace TestFullstack.Server.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ItemId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("ItemPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ItemsCount")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("ItemId1");
 
                     b.HasIndex("OrderId");
 
@@ -419,10 +433,14 @@ namespace TestFullstack.Server.Migrations
             modelBuilder.Entity("TestFullstack.Server.Models.OrderItem", b =>
                 {
                     b.HasOne("TestFullstack.Server.Models.Item", "Item")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TestFullstack.Server.Models.Item", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ItemId1");
 
                     b.HasOne("TestFullstack.Server.Models.Order", "Order")
                         .WithMany("OrderItems")

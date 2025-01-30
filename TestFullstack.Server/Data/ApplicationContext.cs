@@ -21,46 +21,29 @@ namespace TestFullstack.Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            //modelBuilder.Entity<Customer>(entity =>
-            //{
-            //    entity.HasKey(e => e.Id);
-            //    entity.Property(e => e.Code).IsRequired();
-            //    entity.Property(e => e.Name).IsRequired();
-            //});
-
+  
             modelBuilder.Entity<Customer>()
-                     .HasOne(c => c.User)
-                     .WithOne(u => u.Customer)
-                     .HasForeignKey<ApplicationUser>(u => u.CustomerId)
-                     .OnDelete(DeleteBehavior.Cascade);
+            .HasOne(c => c.User)
+            .WithOne(u => u.Customer)
+            .HasForeignKey<ApplicationUser>(u => u.CustomerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Order>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasOne(o => o.Customer)
-                      .WithMany(c => c.Orders)
-                      .HasForeignKey(o => o.CustomerId);
-            });
-
-            modelBuilder.Entity<OrderItem>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasOne(oi => oi.Order)
-                      .WithMany(o => o.OrderItems)
-                      .HasForeignKey(oi => oi.OrderId);
-            });
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Customer)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CustomerId);
 
             modelBuilder.Entity<OrderItem>()
-           .HasOne(oi => oi.Item)
-           .WithMany()
-           .HasForeignKey(oi => oi.ItemId);
+            .HasOne(oi => oi.Order)
+            .WithMany(o => o.OrderItems)
+            .HasForeignKey(oi => oi.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ApplicationUser>()
-           .HasOne(u => u.Customer)
-           .WithMany()
-           .HasForeignKey(u => u.CustomerId)
-           .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Item)
+            .WithMany(i => i.OrderItems)
+            .HasForeignKey(oi => oi.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<IdentityRole>().HasData(
                new IdentityRole {Id= "f1811537-a05b-49bb-bee9-7a9480267c12", Name = "Manager", NormalizedName = "MANAGER" },

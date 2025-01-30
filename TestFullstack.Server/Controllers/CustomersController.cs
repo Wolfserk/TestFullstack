@@ -4,7 +4,7 @@ using TestFullstack.Server.Services.Customers;
 
 namespace TestFullstack.Server.Controllers
 {
-    [ApiController]
+        [ApiController]
         [Route("api/[controller]")]
         public class CustomersController : ControllerBase
         {
@@ -50,14 +50,5 @@ namespace TestFullstack.Server.Controllers
                 return Ok(customer);
             }
 
-            [HttpPost]
-            public async Task<IActionResult> Create([FromBody] Customer customer)
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                await _customerService.AddCustomerAsync(customer);
-                return CreatedAtAction(nameof(GetByCode), new { code = customer.Code }, customer);
-            }
-        }
+    }
 }

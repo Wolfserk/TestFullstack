@@ -6,6 +6,8 @@ namespace TestFullstack.Server.Services.Customers
     {
         Task<List<Customer>> GetAllCustomersAsync();
         Task<Customer> GetCustomerByCodeAsync(string code);
-        Task AddCustomerAsync(Customer customer);
+        Task<Customer> AddCustomerAsync(string name, string address, string userId);
+
+
     }
 }

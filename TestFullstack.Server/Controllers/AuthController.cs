@@ -72,8 +72,11 @@ namespace TestFullstack.Server.Controllers
             //return Ok("Авторизация выполнена успешно");
             return Ok(new
             {
+                userId = user.Id,
                 token,
                 email = user.Email,
+                //customerId = user.CustomerId != null ? user.CustomerId : null,
+                customerId = user.CustomerId,
                 role = roles.FirstOrDefault()
             });
         }
@@ -141,7 +144,7 @@ namespace TestFullstack.Server.Controllers
         //    });
         //}
         [HttpGet("role")]
-        [Authorize] // Пользователь должен быть авторизован
+        [Authorize]
         public async Task<IActionResult> GetUserRole()
         {
             var user = await _userManager.GetUserAsync(User);

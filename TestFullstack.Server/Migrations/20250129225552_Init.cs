@@ -107,7 +107,7 @@ namespace TestFullstack.Server.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,11 +225,23 @@ namespace TestFullstack.Server.Migrations
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemsCount = table.Column<int>(type: "int", nullable: false),
-                    ItemPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    ItemPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ItemId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Items_ItemId1",
+                        column: x => x.ItemId1,
+                        principalTable: "Items",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
@@ -282,7 +294,9 @@ namespace TestFullstack.Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_CustomerId",
                 table: "AspNetUsers",
-                column: "CustomerId");
+                column: "CustomerId",
+                unique: true,
+                filter: "[CustomerId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -290,6 +304,16 @@ namespace TestFullstack.Server.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ItemId",
+                table: "OrderItems",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ItemId1",
+                table: "OrderItems",
+                column: "ItemId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
@@ -321,9 +345,6 @@ namespace TestFullstack.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Items");
-
-            migrationBuilder.DropTable(
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
@@ -331,6 +352,9 @@ namespace TestFullstack.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Items");
 
             migrationBuilder.DropTable(
                 name: "Orders");

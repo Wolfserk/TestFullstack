@@ -12,8 +12,8 @@ using TestFullstack.Server.Data;
 namespace TestFullstack.Server.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250128112614_Init")]
-    partial class Init
+    [Migration("20250129231103_SecMig2")]
+    partial class SecMig2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,7 +229,9 @@ namespace TestFullstack.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .IsUnique()
+                        .HasFilter("[CustomerId] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -333,16 +335,12 @@ namespace TestFullstack.Server.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("ItemPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ItemsCount")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
 
                     b.HasIndex("OrderId");
 
@@ -403,9 +401,9 @@ namespace TestFullstack.Server.Migrations
             modelBuilder.Entity("TestFullstack.Server.Models.ApplicationUser", b =>
                 {
                     b.HasOne("TestFullstack.Server.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithOne("User")
+                        .HasForeignKey("TestFullstack.Server.Models.ApplicationUser", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Customer");
                 });
@@ -423,11 +421,19 @@ namespace TestFullstack.Server.Migrations
 
             modelBuilder.Entity("TestFullstack.Server.Models.OrderItem", b =>
                 {
+                    b.HasOne("TestFullstack.Server.Models.Item", "Item")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("TestFullstack.Server.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Item");
 
                     b.Navigation("Order");
                 });
@@ -435,6 +441,14 @@ namespace TestFullstack.Server.Migrations
             modelBuilder.Entity("TestFullstack.Server.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("User")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TestFullstack.Server.Models.Item", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("TestFullstack.Server.Models.Order", b =>
