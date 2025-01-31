@@ -7,8 +7,10 @@ namespace TestFullstack.Server.Services.Items
     {
         Task<List<Item>> GetAllItemsAsync();
         Task<Item> GetItemByIdAsync(Guid id);
-        Task<Item> AddItemAsync(ItemDTO itemDto);
-        Task<Item> UpdateItemAsync(Guid id, ItemDTO itemDto);
+        Task<Item> AddItemAsync(ItemDto itemDto);
+        Task<Item> UpdateItemAsync(Guid id, ItemDto itemDto);
         Task<bool> DeleteItemAsync(Guid id);
+
+        Task<List<ItemPriceDto>> GetItemPricesAsync(List<Guid> itemIds);
     }
 }

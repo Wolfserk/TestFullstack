@@ -13,7 +13,7 @@ namespace TestFullstack.Server.Services.Orders
         {
             _context = context;
         }
-        public async Task<List<OrderDTO>> GetAllUserOrdersAsync(Guid customerId)
+        public async Task<List<OrderDto>> GetAllUserOrdersAsync(Guid customerId)
         {
             var orders = await _context.Orders
                 .Include(o => o.OrderItems)
@@ -21,14 +21,14 @@ namespace TestFullstack.Server.Services.Orders
                 .Where(o => o.CustomerId == customerId)
                 .ToListAsync();
 
-            return orders.Select(o => new OrderDTO
+            return orders.Select(o => new OrderDto
             {
                 Id = o.Id,
                 CustomerId = o.CustomerId,
                 OrderDate = o.OrderDate,
                 Status = o.Status,
                 OrderNumber = o.OrderNumber,
-                OrderItems = o.OrderItems.Select(oi => new OrderItemDTO
+                OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                 {
                     Id = oi.Id,
                     ItemId = oi.ItemId,
@@ -39,27 +39,49 @@ namespace TestFullstack.Server.Services.Orders
             }).ToList();
         }
 
-        public async Task<List<Order>> GetAllOrdersAsync()
+        public async Task<List<OrderDto>> GetAllOrdersAsync()
         {
-            return await _context.Orders.Include(o => o.Customer).ToListAsync();
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .ToListAsync();
+
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                CustomerId = o.CustomerId,
+                OrderDate = o.OrderDate,
+                ShipmentDate = o.ShipmentDate,
+                Status = o.Status,
+                OrderNumber = o.OrderNumber,
+                OrderItems = o.OrderItems.Select(oi => new OrderItemDto
+                {
+                    Id = oi.Id,
+                    ItemId = oi.ItemId,
+                    ItemName = oi.Item.Name,             
+                    ItemsCount = oi.ItemsCount,
+                    ItemPrice = oi.ItemPrice
+                }).ToList()
+            }).ToList();
         }
 
-        public async Task<OrderDTO> GetOrderByIdAsync(Guid id)
+        public async Task<OrderDto> GetOrderByIdAsync(Guid id)
         {
             var order = await _context.Orders
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-                return null;
+                return null!;
 
-            return new OrderDTO
+            return new OrderDto
             {
                 Id = order.Id,
                 CustomerId = order.CustomerId,
                 OrderDate = order.OrderDate,
                 Status = order.Status,
-                OrderItems = order.OrderItems.Select(oi => new OrderItemDTO
+                OrderItems = order.OrderItems.Select(oi => new OrderItemDto
                 {
                     Id = oi.Id,
                     ItemId = oi.ItemId,
@@ -90,6 +112,7 @@ namespace TestFullstack.Server.Services.Orders
                 await _context.SaveChangesAsync();
             }
         }
+
         public async Task<Order> PlaceOrderAsync(Guid customerId, List<OrderItem> items)
         {
             if (items == null || !items.Any())
@@ -108,6 +131,27 @@ namespace TestFullstack.Server.Services.Orders
             await _context.SaveChangesAsync();
 
             return order;
+        }
+        public async Task<bool> ConfirmOrderAsync(ConfirmOrderDto request)
+        {
+            var order = await _context.Orders.FindAsync(request.OrderId);
+            if (order == null || order.Status != "Новый") return false;
+
+            order.Status = "Выполняется";
+            order.OrderNumber = request.OrderNumber;
+            order.ShipmentDate = request.ShipmentDate;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> CompleteOrderAsync(Guid orderId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null || order.Status != "Выполняется") return false;
+
+            order.Status = "Выполнен";
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

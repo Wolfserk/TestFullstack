@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import Home from '../views/HomeView.vue';
-import Customers from '../views/Customers.vue';
 import Register from '../views/RegisterView.vue';
+import Orders from '../views/OrdersView.vue';
 import Cart from '../views/CartView.vue';
+
 import ManagerDashboard from "../views/admin/ManagerDashboard.vue";
 import Users from "../views/admin/UsersView.vue";
 import Items from "../views/admin/ItemsView.vue";
-import Orders from '../views/OrdersView.vue';
+import AllOrders from "../views/admin/AllOrdersView.vue";
+import Customers from "../views/admin/CustomersView.vue";
 
 import { useUserStore } from "../stores/user"; 
 
@@ -20,7 +23,9 @@ const routes = [
   { path: '/orders', component: Orders, meta: { requiresAuth: true } },
   { path: '/admin', component: ManagerDashboard, meta: { requiresManager: true } },
   { path: '/admin/users', component: Users, meta: { requiresManager: true } },
-  { path: '/admin/items', component: Items, meta: { requiresManager: true } }
+  { path: '/admin/items', component: Items, meta: { requiresManager: true } },
+  { path: '/admin/orders', component: AllOrders, meta: { requiresManager: true } },
+  { path: '/admin/customers', component: Customers, meta: { requiresManager: true } }
 ];
 
 const router = createRouter({
@@ -28,14 +33,12 @@ const router = createRouter({
   routes,
 });
 
-// Middleware для проверки роли
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const isManagerRoute = to.path.startsWith("/admin");
   const isAuthenticated = userStore.isAuthenticated;
   const isManager = userStore.role === "Manager";
   const userRole = userStore.role || localStorage.getItem("userRole");
-  //const isCustomer = userStore.role === "Customer";
 
   if (to.meta.requiresManager && userRole !== "Manager") {
     if (!isAuthenticated) {

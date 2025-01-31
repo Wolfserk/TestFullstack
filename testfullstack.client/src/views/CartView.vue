@@ -46,7 +46,6 @@
     name: "CartView",
     setup() {
       const cartStore = useCartStore();
-      //const cart = ref(cartStore.cart);
 
       const cart = computed(() => cartStore.cart);
 

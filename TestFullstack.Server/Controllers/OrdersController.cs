@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Entities;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Orders;
@@ -27,6 +29,29 @@ namespace TestFullstack.Server.Controllers
         {
             var orders = await _orderService.GetAllOrdersAsync();
             return Ok(orders);
+        }
+
+        [HttpPost("confirm")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> ConfirmOrder([FromBody] ConfirmOrderDto request)
+        {
+            if (request.OrderNumber <= 0) return BadRequest("Неверный код заказа.");
+            if (request.ShipmentDate == default) return BadRequest("Введите дату доставки.");
+
+            var result = await _orderService.ConfirmOrderAsync(request);
+            if (!result) return BadRequest("Невозможно подтвердить заказ.");
+
+            return Ok($"Заказ №{request.OrderNumber} подтвержден, дата доставки: {request.ShipmentDate:dd.MM.yyyy}");
+        }
+
+        [HttpPost("complete/{id}")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> CompleteOrder(Guid id)
+        {
+            var result = await _orderService.CompleteOrderAsync(id);
+            if (!result) return BadRequest("Заказ не может быть завершен.");
+
+            return Ok($"Заказ {id} успешно завершен.");
         }
 
         [HttpGet("myorders")]

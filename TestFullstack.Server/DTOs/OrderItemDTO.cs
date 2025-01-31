@@ -1,6 +1,6 @@
 ﻿namespace TestFullstack.Server.DTOs
 {
-    public class OrderItemDTO
+    public class OrderItemDto
     {
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }

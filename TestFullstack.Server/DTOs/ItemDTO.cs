@@ -2,7 +2,7 @@
 
 namespace TestFullstack.Server.DTOs
 {
-    public class ItemDTO
+    public class ItemDto
     {
         [Required]
         [RegularExpression(@"^\d{2}-\d{4}-[A-Z]{2}\d{2}$", ErrorMessage = "Код товара должен быть в формате XX-XXXX-YYXX")]

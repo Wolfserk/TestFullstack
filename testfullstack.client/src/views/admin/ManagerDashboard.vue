@@ -8,11 +8,15 @@
       </router-link>
       <router-link to="/admin/items"
                    class="block bg-green-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-green-700">
-        Товары
+        Редактирование каталога
       </router-link>
-      <router-link to="/manager/orders"
+      <router-link to="/admin/orders"
                    class="block bg-purple-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-purple-700">
-        Заказы
+        Список заказов
+      </router-link>
+      <router-link to="/admin/customers"
+                   class="block bg-purple-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-purple-700">
+        Список заказчиков
       </router-link>
     </div>
   </div>

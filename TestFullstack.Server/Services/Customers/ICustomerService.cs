@@ -1,4 +1,5 @@
-﻿using TestFullstack.Server.Entities;
+﻿using TestFullstack.Server.DTOs;
+using TestFullstack.Server.Entities;
 
 namespace TestFullstack.Server.Services.Customers
 {
@@ -8,6 +9,6 @@ namespace TestFullstack.Server.Services.Customers
         Task<Customer> GetCustomerByCodeAsync(string code);
         Task<Customer> AddCustomerAsync(string name, string? address, string userId);
 
-
+        Task<Customer?> UpdateCustomerAsync(Guid id, UpdateCustomerDto dto);
     }
 }

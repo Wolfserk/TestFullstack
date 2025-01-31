@@ -24,7 +24,7 @@ namespace TestFullstack.Server.Services.Items
             return await _context.Items.FindAsync(id);
         }
 
-        public async Task<Item> AddItemAsync(ItemDTO itemDto)
+        public async Task<Item> AddItemAsync(ItemDto itemDto)
         {
             var item = new Item
             {
@@ -39,7 +39,7 @@ namespace TestFullstack.Server.Services.Items
             return item;
         }
 
-        public async Task<Item> UpdateItemAsync(Guid id, ItemDTO itemDto)
+        public async Task<Item> UpdateItemAsync(Guid id, ItemDto itemDto)
         {
             var item = await _context.Items.FindAsync(id);
             if (item == null) return null;
@@ -61,6 +61,18 @@ namespace TestFullstack.Server.Services.Items
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<ItemPriceDto>> GetItemPricesAsync(List<Guid> itemIds)
+        {
+            return await _context.Items
+                .Where(i => itemIds.Contains(i.Id))
+                .Select(i => new ItemPriceDto
+                {
+                    Id = i.Id,
+                    Price = i.Price
+                })
+                .ToListAsync();
         }
     }
 }

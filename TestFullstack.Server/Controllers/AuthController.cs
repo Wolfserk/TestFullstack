@@ -69,14 +69,11 @@ namespace TestFullstack.Server.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = GenerateJwtToken(user, roles);
-
-            //return Ok("Авторизация выполнена успешно");
             return Ok(new
             {
                 userId = user.Id,
                 token,
                 email = user.Email,
-                //customerId = user.CustomerId != null ? user.CustomerId : null,
                 customerId = user.CustomerId,
                 role = roles.FirstOrDefault()
             });
@@ -101,49 +98,19 @@ namespace TestFullstack.Server.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("sG2f3v5x8y/B1A2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "https://localhost:7034",
-                audience: "https://localhost:54305",
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds);
            
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-        //[HttpPost("token")]
-        //public async Task<IActionResult> GenerateToken([FromBody] LoginModel model)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(model.Email);
-        //    if (user == null || !(await _userManager.CheckPasswordAsync(user, model.Password)))
-        //        return Unauthorized("Недействительные учетные данные");
-
-        //    var authClaims = new[]
-        //    {
-        //        new Claim(ClaimTypes.Name, user.UserName),
-        //        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        //    };
-
-        //    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-        //    var token = new JwtSecurityToken(
-        //        issuer: _configuration["Jwt:Issuer"],
-        //        audience: _configuration["Jwt:Audience"],
-        //        expires: DateTime.Now.AddHours(3),
-        //        claims: authClaims,
-        //        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        //    );
-
-        //    return Ok(new
-        //    {
-        //        token = new JwtSecurityTokenHandler().WriteToken(token),
-        //        expiration = token.ValidTo
-        //    });
-        //}
         [HttpGet("role")]
         [Authorize]
         public async Task<IActionResult> GetUserRole()

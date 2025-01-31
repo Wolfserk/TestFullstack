@@ -35,7 +35,7 @@ namespace TestFullstack.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpPost]
-        public async Task<IActionResult> AddItem([FromBody] ItemDTO itemDto)
+        public async Task<IActionResult> AddItem([FromBody] ItemDto itemDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -45,7 +45,7 @@ namespace TestFullstack.Server.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateItem(Guid id, [FromBody] ItemDTO itemDto)
+        public async Task<IActionResult> UpdateItem(Guid id, [FromBody] ItemDto itemDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -63,6 +63,15 @@ namespace TestFullstack.Server.Controllers
             if (!result) return NotFound("Товар не найден");
 
             return Ok("Товар успешно удален");
+        }
+        [HttpPost("get-prices")]
+        public async Task<IActionResult> GetItemPrices([FromBody] ItemPriceRequestDto request)
+        {
+            if (request.ItemIds == null || !request.ItemIds.Any())
+                return BadRequest("Список товаров пуст");
+
+            var prices = await _itemService.GetItemPricesAsync(request.ItemIds);
+            return Ok(prices);
         }
     }
 }

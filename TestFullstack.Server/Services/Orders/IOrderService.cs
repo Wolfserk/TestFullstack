@@ -5,12 +5,14 @@ namespace TestFullstack.Server.Services.Orders
 {
     public interface IOrderService
     {
-        Task<List<Order>> GetAllOrdersAsync();
-        Task<List<OrderDTO>> GetAllUserOrdersAsync(Guid customerId);
-        Task<OrderDTO> GetOrderByIdAsync(Guid id);
+        Task<List<OrderDto>> GetAllOrdersAsync();
+        Task<List<OrderDto>> GetAllUserOrdersAsync(Guid customerId);
+        Task<OrderDto> GetOrderByIdAsync(Guid id);
         Task AddOrderAsync(Order order);
         Task UpdateOrderAsync(Order order);
         Task DeleteOrderAsync(Guid id);
         Task<Order> PlaceOrderAsync(Guid customerId, List<OrderItem> items);
+        Task<bool> ConfirmOrderAsync(ConfirmOrderDto confirm);
+        Task<bool> CompleteOrderAsync(Guid orderId);
     }
 }

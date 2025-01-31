@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Customers;
 
@@ -16,6 +17,7 @@ namespace TestFullstack.Server.Controllers
             _customerService = customerService;
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -51,6 +53,16 @@ namespace TestFullstack.Server.Controllers
             {
                 return StatusCode(500, $"Ошибка: {ex.Message}");
             }
+        }
+
+        [Authorize(Roles = "Manager")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] UpdateCustomerDto dto)
+        {
+            var customer = await _customerService.UpdateCustomerAsync(id, dto);
+            if (customer == null) return NotFound("Заказчик не найден");
+
+            return Ok(customer);
         }
     }
 }
