@@ -2,41 +2,41 @@
 using TestFullstack.Server.Data;
 using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Entities;
+using TestFullstack.Server.Repositories.Customers;
 
 namespace TestFullstack.Server.Services.Customers
 {
     public class CustomerService : ICustomerService
     {
-        private readonly ApplicationContext _context;
+        private readonly ICustomerRepository _customerRepository;
 
-        public CustomerService(ApplicationContext context)
+        public CustomerService(ICustomerRepository customerRepository)
         {
-            _context = context;
+            _customerRepository = customerRepository;
         }
 
         public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            return await _context.Customers.ToListAsync();
+            return await _customerRepository.GetAllAsync();
         }
 
-        public async Task<Customer> GetCustomerByCodeAsync(string code)
+        public async Task<Customer?> GetCustomerByCodeAsync(string code)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Code == code);
+            return await _customerRepository.GetByCodeAsync(code);
         }
+
         public async Task<Customer> AddCustomerAsync(string name, string? address, string userId)
         {
             var year = DateTime.UtcNow.Year;
-
-            var maxCode = await _context.Customers
+            var lastCustomer = (await _customerRepository.GetAllAsync())
                 .Where(c => c.Code.StartsWith(year.ToString()))
                 .OrderByDescending(c => c.Code)
-                .Select(c => c.Code)
-                .FirstOrDefaultAsync();
+                .FirstOrDefault();
 
             int lastId = 1;
-            if (!string.IsNullOrEmpty(maxCode))
+            if (lastCustomer != null)
             {
-                var parts = maxCode.Split('-');
+                var parts = lastCustomer.Code.Split('-');
                 if (parts.Length == 2 && int.TryParse(parts[0], out int parsedId))
                 {
                     lastId = parsedId + 1;
@@ -52,51 +52,30 @@ namespace TestFullstack.Server.Services.Customers
                 Code = $"{lastId:D4}-{year}",
             };
 
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            var user = await _context.Users.FindAsync(userId);
-            if (user != null)
-            {
-                user.CustomerId = customer.Id;
-                await _context.SaveChangesAsync();
-            }
-
-            return customer;
+            return await _customerRepository.AddAsync(customer);
         }
+
         public async Task<Customer?> UpdateCustomerAsync(Guid id, UpdateCustomerDto dto)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return null;
-
-            customer.Name = dto.Name;
-            customer.Code = dto.Code;
-            customer.Address = dto.Address;
-            customer.Discount = dto.Discount;
-
-            await _context.SaveChangesAsync();
-            return customer;
+            var customer = new Customer
+            {
+                Name = dto.Name,
+                Code = dto.Code,
+                Address = dto.Address,
+                Discount = dto.Discount
+            };
+            return await _customerRepository.UpdateAsync(id, customer);
         }
+
         public async Task<int> GetCustomerDiscountAsync(Guid customerId)
         {
-            var customer = await _context.Customers.FindAsync(customerId);
-            return customer?.Discount ?? 0;
+            return await _customerRepository.GetDiscountAsync(customerId);
         }
 
-        public async Task DeleteCustomerAsync(Guid? id)
+        public async Task DeleteCustomerAsync(Guid? customerId)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return;
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.CustomerId == id);
-            if (user != null)
-            {
-                user.CustomerId = null;
-            }
-
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            if (customerId == null) return;
+            await _customerRepository.DeleteAsync(customerId.Value);
         }
-
     }
 }

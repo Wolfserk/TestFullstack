@@ -12,6 +12,7 @@ using TestFullstack.Server.Services.Users;
 using TestFullstack.Server.Entities;
 using TestFullstack.Server.Services.Auth;
 using TestFullstack.Server.Repositories.Auth;
+using TestFullstack.Server.Repositories.Customers;
 
 
 namespace TestFullstack.Server
@@ -48,6 +49,8 @@ namespace TestFullstack.Server
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
             builder.Services.AddControllers();
