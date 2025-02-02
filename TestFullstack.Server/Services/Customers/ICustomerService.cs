@@ -10,7 +10,6 @@ namespace TestFullstack.Server.Services.Customers
         Task<Customer> AddCustomerAsync(string name, string? address, string userId);
         Task<Customer?> UpdateCustomerAsync(Guid id, UpdateCustomerDto dto);
         Task<int> GetCustomerDiscountAsync(Guid customerId);
-
         Task DeleteCustomerAsync(Guid? customerId);
     }
 }

@@ -10,6 +10,8 @@ using TestFullstack.Server.Services.Items;
 using TestFullstack.Server.Services.Orders;
 using TestFullstack.Server.Services.Users;
 using TestFullstack.Server.Entities;
+using TestFullstack.Server.Services.Auth;
+using TestFullstack.Server.Repositories.Auth;
 
 
 namespace TestFullstack.Server
@@ -44,6 +46,9 @@ namespace TestFullstack.Server
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();

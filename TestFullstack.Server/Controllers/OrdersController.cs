@@ -106,13 +106,13 @@ namespace TestFullstack.Server.Controllers
         public async Task<IActionResult> DeleteOrder(Guid id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null) return NotFound("Order not found");
+            if (order == null) return NotFound("Заказ не найден");
 
             if (order.Status != "Новый")
-                return BadRequest("Only new orders can be deleted");
+                return BadRequest("Можно удалить только новые заказы");
 
             await _orderService.DeleteOrderAsync(id);
-            return Ok("Order deleted");
+            return Ok("Заказ удален");
         }
     }
 }

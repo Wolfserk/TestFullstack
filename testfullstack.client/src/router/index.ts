@@ -50,6 +50,11 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
+  //if (isAuthenticated && userRole === "Manager" && to.path !== "/admin") {
+  //  next({ path: "/admin" }); // Перенаправляем на страницу администратора
+  //  return;
+  //}
+
   // 🔹 Проверка на роль "Manager"
   if (to.meta.requiresManager) {
     if (!isAuthenticated) {

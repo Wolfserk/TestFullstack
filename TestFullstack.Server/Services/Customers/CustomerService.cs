@@ -88,7 +88,6 @@ namespace TestFullstack.Server.Services.Customers
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return;
 
-            // Обнуляем связь с пользователем
             var user = await _context.Users.FirstOrDefaultAsync(u => u.CustomerId == id);
             if (user != null)
             {
