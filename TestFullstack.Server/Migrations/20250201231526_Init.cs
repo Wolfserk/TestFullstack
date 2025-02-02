@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace TestFullstack.Server.Migrations
 {
     /// <inheritdoc />
@@ -34,7 +32,7 @@ namespace TestFullstack.Server.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Discount = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -107,7 +105,7 @@ namespace TestFullstack.Server.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,8 +116,8 @@ namespace TestFullstack.Server.Migrations
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ShipmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OrderNumber = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    OrderNumber = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -225,8 +223,7 @@ namespace TestFullstack.Server.Migrations
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemsCount = table.Column<int>(type: "int", nullable: false),
-                    ItemPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ItemId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ItemPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,25 +235,11 @@ namespace TestFullstack.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItems_Items_ItemId1",
-                        column: x => x.ItemId1,
-                        principalTable: "Items",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "f1811537-a05b-49bb-bee9-7a9480267c12", null, "Manager", "MANAGER" },
-                    { "f67b8dc6-0bee-4732-85fc-ff31a90615ad", null, "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -309,11 +292,6 @@ namespace TestFullstack.Server.Migrations
                 name: "IX_OrderItems_ItemId",
                 table: "OrderItems",
                 column: "ItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_ItemId1",
-                table: "OrderItems",
-                column: "ItemId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",

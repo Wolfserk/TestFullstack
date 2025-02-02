@@ -4,18 +4,18 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
       <router-link to="/admin/users"
                    class="block bg-blue-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-blue-700">
-        Пользователи
+        Список пользователей
       </router-link>
       <router-link to="/admin/items"
-                   class="block bg-green-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-green-700">
+                   class="block bg-blue-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-blue-700">
         Редактирование каталога
       </router-link>
       <router-link to="/admin/orders"
-                   class="block bg-purple-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-purple-700">
+                   class="block bg-blue-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-blue-700">
         Список заказов
       </router-link>
       <router-link to="/admin/customers"
-                   class="block bg-purple-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-purple-700">
+                   class="block bg-blue-600 text-white text-center py-4 rounded-lg shadow-md hover:bg-blue-700">
         Список заказчиков
       </router-link>
     </div>

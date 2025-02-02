@@ -17,10 +17,11 @@ import { useUserStore } from "../stores/user";
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/customers', component: Customers },
-  { path: '/register', component: Register },
-  { path: '/cart', component: Cart },
-  { path: '/orders', component: Orders, meta: { requiresAuth: true } },
+  { path: '/register', component: Register, meta: { requiresGuest: true } },
+  { path: '/cart', component: Cart, meta: { requiresAuth: true, requiresCustomer: true } },
+  { path: '/orders', component: Orders, meta: { requiresAuth: true, requiresCustomer: true } },
+
+
   { path: '/admin', component: ManagerDashboard, meta: { requiresManager: true } },
   { path: '/admin/users', component: Users, meta: { requiresManager: true } },
   { path: '/admin/items', component: Items, meta: { requiresManager: true } },
@@ -35,29 +36,50 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  const isManagerRoute = to.path.startsWith("/admin");
-  const isAuthenticated = userStore.isAuthenticated;
-  const isManager = userStore.role === "Manager";
   const userRole = userStore.role || localStorage.getItem("userRole");
+  const isAuthenticated = userStore.isAuthenticated;
 
-  if (to.meta.requiresManager && userRole !== "Manager") {
+
+  if (to.meta.requiresGuest) {
+    if (isAuthenticated) {
+      alert("Вы уже авторизованы. Регистрация недоступна.");
+      next({ path: "/" }); // Перенаправляем на главную страницу
+    } else {
+      next(); // Разрешаем доступ
+    }
+    return;
+  }
+
+  // 🔹 Проверка на роль "Manager"
+  if (to.meta.requiresManager) {
     if (!isAuthenticated) {
       alert("Вы не авторизованы. Пожалуйста, войдите в систему.");
       next({ path: "/" });
-    } else
-    if (isManagerRoute && userStore.role !== "Manager") {
+    } else if (userRole !== "Manager") {
       alert("У вас нет доступа к этому разделу.");
       next("/");
-    } 
-    else if (!isManager) {
-      alert("У вас нет доступа к этой странице.");
-      next(false);
     } else {
       next();
     }
-  } else {
-    next();
+    return;
   }
+
+  // 🔹 Проверка на роль "Customer"
+  if (to.meta.requiresCustomer) {
+    if (!isAuthenticated) {
+      alert("Вы не авторизованы. Пожалуйста, войдите в систему.");
+      next({ path: "/" });
+    } else if (userRole !== "Customer") {
+      alert("Эта страница доступна только заказчикам.");
+      next("/");
+    } else {
+      next();
+    }
+    return;
+  }
+
+  next();
 });
+
 
 export default router;

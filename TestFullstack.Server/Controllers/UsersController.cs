@@ -105,7 +105,7 @@ namespace TestFullstack.Server.Controllers
                 return BadRequest(ModelState);
 
             // Проверяем, существует ли новая роль
-            if (!await _roleManager.RoleExistsAsync(model.Role))
+            if (!await _userService.RoleExistsAsync(model.Role))
             {
                 return BadRequest("Роли не существует");
             }

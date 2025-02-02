@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Customers;
+using TestFullstack.Server.Services.Users;
 
 namespace TestFullstack.Server.Controllers
 {
@@ -11,10 +12,12 @@ namespace TestFullstack.Server.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _customerService;
+        private readonly IUserService _userService;
 
-        public CustomersController(ICustomerService customerService)
+        public CustomersController(ICustomerService customerService, IUserService userService)
         {
             _customerService = customerService;
+            _userService = userService;
         }
 
         [Authorize(Roles = "Manager")]
@@ -39,15 +42,17 @@ namespace TestFullstack.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.UserId))
+            if (request == null || string.IsNullOrEmpty(request.Name))
             {
                 return BadRequest("Некорректные данные.");
             }
 
             try
             {
-                var customer = await _customerService.AddCustomerAsync(request.Name, request.Address, request.UserId);
-                return StatusCode(200);
+                var user = await _userService.GetUserAsync(User);
+                var customer = await _customerService.AddCustomerAsync(request.Name, request.Address, user.Id);
+                return Ok(customer.Id);
+                //return StatusCode(200);
             }
             catch (Exception ex)
             {
@@ -63,6 +68,19 @@ namespace TestFullstack.Server.Controllers
             if (customer == null) return NotFound("Заказчик не найден");
 
             return Ok(customer);
+        }
+
+        [HttpGet("discount")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> GetCustomerDiscount()
+        {
+            var user = await _userService.GetUserAsync(User);
+
+            if (user == null || user.CustomerId == null)
+                return BadRequest("Пользователь не привязан к заказчику.");
+
+            var discount = await _customerService.GetCustomerDiscountAsync((Guid)user.CustomerId);
+            return Ok(new { discount });
         }
     }
 }

@@ -35,17 +35,26 @@ namespace TestFullstack.Server.Controllers
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
-            {
-                if (_userManager.Users.Count() <= 1)  //Админка первому пользователю (Можно закомментировать весть if после регистрации первого аккаунта)
-                    await _userManager.AddToRoleAsync(user, "Manager");
-                else
-                    await _userManager.AddToRoleAsync(user, "Customer");
-            }
-            else
+            if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok("Регистрация прошла успешно!");
+            if (_userManager.Users.Count() <= 1)
+                await _userManager.AddToRoleAsync(user, "Manager");
+            else
+                await _userManager.AddToRoleAsync(user, "Customer");
+
+            // ✅ Генерируем токен сразу после регистрации
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = GenerateJwtToken(user, roles);
+
+            return Ok(new
+            {
+                userId = user.Id,
+                token,
+                email = user.Email,
+                customerId = user.CustomerId,
+                role = roles.FirstOrDefault()
+            });
         }
 
         [HttpPost("login")]
@@ -105,7 +114,7 @@ namespace TestFullstack.Server.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddHours(6),
                 signingCredentials: creds);
            
             return new JwtSecurityTokenHandler().WriteToken(token);

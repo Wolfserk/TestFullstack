@@ -27,10 +27,9 @@ namespace TestFullstack.Server
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                //options.SignIn.RequireConfirmedAccount = true;
-                //options.Password.RequireDigit = true;
-                //options.Password.RequireUppercase = true;
-                //options.Password.RequireLowercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
                 options.Password.RequiredLength = 6;
             })
                 .AddRoles<IdentityRole>()
@@ -81,7 +80,6 @@ namespace TestFullstack.Server
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("sG2f3v5x8y/B1A2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4"))
                 };
 
                 options.Events = new JwtBearerEvents
@@ -93,16 +91,20 @@ namespace TestFullstack.Server
                     },
                     OnTokenValidated = context =>
                     {
-                        Console.WriteLine($"Токен успешно валидирован для пользователя: {context.Principal.Identity.Name}");
+                        Console.WriteLine($"Всё ок: {context.Principal.Identity.Name}");
                         return Task.CompletedTask;
                     }
                 };
             });
-            Console.WriteLine(builder.Configuration["Jwt:Issuer"]);
-            Console.WriteLine(builder.Configuration["Jwt:Audience"]);
-            Console.WriteLine(builder.Configuration["Jwt:Key"]);
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationContext>();
+                SeedData.Initialize(context);
+            }
 
             app.UseCors(MyAllowSpecificOrigins);
 

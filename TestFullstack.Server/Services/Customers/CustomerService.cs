@@ -27,21 +27,19 @@ namespace TestFullstack.Server.Services.Customers
         {
             var year = DateTime.UtcNow.Year;
 
-            // Получаем максимальный Code из существующих записей
             var maxCode = await _context.Customers
-                .Where(c => c.Code.StartsWith(year.ToString())) // Фильтруем по году
+                .Where(c => c.Code.StartsWith(year.ToString()))
                 .OrderByDescending(c => c.Code)
                 .Select(c => c.Code)
                 .FirstOrDefaultAsync();
 
-            int lastId = 1; // Начальное значение, если записей нет
+            int lastId = 1;
             if (!string.IsNullOrEmpty(maxCode))
             {
-                // Извлекаем числовую часть из Code (например, "0001-2023" -> 1)
                 var parts = maxCode.Split('-');
                 if (parts.Length == 2 && int.TryParse(parts[0], out int parsedId))
                 {
-                    lastId = parsedId + 1; // Инкрементируем
+                    lastId = parsedId + 1;
                 }
             }
 
@@ -51,7 +49,7 @@ namespace TestFullstack.Server.Services.Customers
                 Name = name,
                 Address = address,
                 Discount = 0,
-                Code = $"{lastId:D4}-{year}", // Форматируем Code
+                Code = $"{lastId:D4}-{year}",
             };
 
             _context.Customers.Add(customer);
@@ -78,6 +76,27 @@ namespace TestFullstack.Server.Services.Customers
 
             await _context.SaveChangesAsync();
             return customer;
+        }
+        public async Task<int> GetCustomerDiscountAsync(Guid customerId)
+        {
+            var customer = await _context.Customers.FindAsync(customerId);
+            return customer?.Discount ?? 0;
+        }
+
+        public async Task DeleteCustomerAsync(Guid? id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null) return;
+
+            // Обнуляем связь с пользователем
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.CustomerId == id);
+            if (user != null)
+            {
+                user.CustomerId = null;
+            }
+
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
         }
 
     }

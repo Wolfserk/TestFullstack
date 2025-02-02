@@ -4,51 +4,48 @@
       <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-900">Test Application</h1>
         <nav>
-          <ul class="flex space-x-4">
+          <ul v-if="isCustomer" class="flex space-x-4">
             <li><router-link to="/" class="text-blue-600 hover:underline">Главная</router-link></li>
             <li>
-              <div v-if="isCustomer" class="flex items-center space-x-4">
-                <router-link to="/cart" class="relative text-blue-600 hover:underline">
-                  🛒 Корзина
-                  <span v-if="cartTotal > 0" class="ml-1 px-2 py-1 text-sm bg-red-500 rounded-full">
-                    {{ cartTotal }}
-                  </span>
-                </router-link>
-              </div>
+              <button @click="goToCart" class="relative text-blue-600 hover:underline">
+                🛒 Корзина
+                <span v-if="cartTotal > 0" class="ml-1 px-2 py-1 text-sm bg-red-500 rounded-full">
+                  {{ cartTotal }}
+                </span>
+              </button>
             </li>
-            <li v-if="isCustomer">
+            <li>
               <router-link to="/orders" class="text-blue-600 hover:underline">Мои заказы</router-link>
             </li>
-            <li><router-link v-if="isManager" to="/admin" class="text-blue-600 hover:underline">Управление</router-link></li>
+          </ul>
+          <ul v-if="isManager" class="flex space-x-4">
+            <li><router-link to="/admin" class="text-blue-600 hover:underline">Управление</router-link></li>
+            <li><router-link to="/admin/users" class="text-blue-600 hover:underline">Пользователи</router-link></li>
+            <li><router-link to="/admin/items" class="text-blue-600 hover:underline">Каталог</router-link></li>
+            <li><router-link to="/admin/orders" class="text-blue-600 hover:underline">Заказы</router-link></li>
+            <li><router-link to="/admin/customers" class="text-blue-600 hover:underline">Заказчики</router-link></li>
           </ul>
         </nav>
         <div>
-          <div v-if="userStore.isAuthenticated" class="space-x-4">
-            Добро пожаловать: <strong>{{ userStore.email }}</strong>
-            Ваша роль: <strong>{{ userStore.role }}</strong>
-            <button @click="logout" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700">
+          <div v-if="userStore.isAuthenticated" class="flex flex-col items-center space-y-2">
+            <div>Добро пожаловать: <strong>{{ userStore.email }}</strong></div>
+            <div>
+              <strong>
+                {{ userStore.role === 'Customer' ? `Заказчик` : "Менеджер" }}
+              </strong>
+            </div>
+            <button @click="logout" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 w-fit mt-4">
               Выйти
             </button>
           </div>
           <div v-else>
-            <button @click="openLoginModal"
-                    class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+            <button @click="openLoginModal" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
               Войти
             </button>
-            <router-link to="/register"
-                         class="ml-4 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
+            <router-link to="/register" class="ml-4 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700">
               Регистрация
             </router-link>
           </div>
-          <LoginModal v-if="isLoginModalOpen"
-                      :isOpen="isLoginModalOpen"
-                      @close="closeLoginModal"
-                      @openCustomerModal="openCustomerModal" />
-
-          <CustomerModal v-if="isCustomerModalOpen"
-                         :isOpen="isCustomerModalOpen"
-                         :userId="userId"
-                         @close="closeCustomerModal" />
         </div>
       </div>
     </header>
@@ -58,6 +55,9 @@
     <footer class="bg-gray-200 text-center py-4">
       <p class="text-sm text-gray-600">&copy; 2025 Test App. Fullstack </p>
     </footer>
+
+    <LoginModal v-if="isLoginModalOpen" :isOpen="isLoginModalOpen" @close="closeLoginModal" @openCustomerModal="openCustomerModal" />
+    <CreateCustomerModal v-if="isCustomerModalOpen" :isOpen="isCustomerModalOpen" :userId="userId" @close="closeCustomerModal" />
   </div>
 </template>
 
@@ -67,11 +67,11 @@
   import { useCartStore } from "./stores/cart";
   import { useRouter } from "vue-router";
   import LoginModal from "./components/LoginModal.vue";
-  import CustomerModal from "./components/CustomerModal.vue";
+  import CreateCustomerModal from "./components/CreateCustomerModal.vue";
 
   export default defineComponent({
     name: "App",
-    components: { LoginModal, CustomerModal },
+    components: { LoginModal, CreateCustomerModal },
     setup() {
       const userStore = useUserStore();
       const cartStore = useCartStore();
@@ -81,15 +81,30 @@
       const isCustomerModalOpen = ref(false);
       const userId = ref<string | null>(null);
 
+      const goToCart = async () => {
+        console.log("customerId:", userStore.customerId);
+        console.log("Тип customerId:", typeof userStore.customerId);
+        if (userStore.customerId === null || !userStore.customerId || userStore.customerId === "null") {
+          console.log("❌ Нет customerId, запрещаем доступ в корзину и открываем CreateCustomerModal...");
+          isCustomerModalOpen.value = true;
+          return;
+        }
+        else { router.push("/cart"); }
+      };
+
+      watch(() => userStore.customerId, (newCustomerId) => {
+        if (newCustomerId) {
+          console.log("✅ customerId обновлён, закрываем модальное окно...");
+          isCustomerModalOpen.value = false;
+        }
+      });
+
       onMounted(() => {
-        cartStore.loadCart();
+        if (userStore.isAuthenticated && !userStore.customerId) {
+          console.log("🔍 Нет customerId после входа, показываем CreateCustomerModal...");
+          isCustomerModalOpen.value = true;
+        }
       });
-      watch(() => userStore.userId, () => {
-        cartStore.loadCart();
-      });
-      watch(() => cartStore.cart, (newCart) => {
-        console.log("Обновлено количество товаров в корзине:", newCart.length);
-      }, { deep: true });
 
       const openLoginModal = () => {
         isLoginModalOpen.value = true;
@@ -100,11 +115,12 @@
       };
 
       const openCustomerModal = (id: string) => {
-        userId.value = id; 
+        userId.value = id;
         isCustomerModalOpen.value = true;
       };
 
       const closeCustomerModal = () => {
+        console.log("Модальное окно закрыто");
         isCustomerModalOpen.value = false;
       };
 
@@ -116,9 +132,8 @@
       );
 
       const logout = () => {
-        cartStore.logoutCart();
         userStore.clearUser();
-        router.push('/');
+        router.push("/");
       };
 
       return {
@@ -134,6 +149,7 @@
         openCustomerModal,
         closeCustomerModal,
         userId,
+        goToCart,
       };
     },
   });

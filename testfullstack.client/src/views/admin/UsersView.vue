@@ -102,7 +102,10 @@
           const response = await axios.get("https://localhost:7034/api/users", {
             headers: { Authorization: `Bearer ${userStore.token}` },
           });
-          users.value = response.data;
+          
+          console.log(userStore.userId);
+          //users.value = response.data;
+          users.value = response.data.filter((user: any) => user.id !== userStore.userId);
         } catch (error) {
           console.error("Ошибка при загрузке пользователей:", error);
         }

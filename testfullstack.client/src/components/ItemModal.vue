@@ -8,7 +8,11 @@
       <main>
         <form>
           <label class="block mb-2">Код товара</label>
-          <input v-model="item.code" type="text" class="w-full p-2 mb-2 border border-gray-300 rounded-lg" />
+          <input v-model="item.code"
+                 @input="formatCode"
+                 type="text"
+                 class="w-full p-2 mb-2 border border-gray-300 rounded-lg"
+                 placeholder="XX-XXXX-XXYY" />
           <p v-if="!isCodeValid" class="text-red-500 text-sm mb-2">Формат: XX-XXXX-YYXX</p>
 
           <label class="block mb-2">Название</label>
@@ -70,7 +74,16 @@
         }
       };
 
-      return { item, isCodeValid, isCategoryValid, close, onSubmit };
+      // Функция для автоматического добавления дефисов
+      const formatCode = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        let value = input.value.replace(/-/g, ""); // Убираем все дефисы
+        if (value.length > 2) value = value.slice(0, 2) + "-" + value.slice(2); // Добавляем первый дефис
+        if (value.length > 7) value = value.slice(0, 7) + "-" + value.slice(7); // Добавляем второй дефис
+        item.code = value.toUpperCase(); // Приводим к верхнему регистру
+      };
+
+      return { item, isCodeValid, isCategoryValid, close, onSubmit, formatCode };
     },
   });
 </script>

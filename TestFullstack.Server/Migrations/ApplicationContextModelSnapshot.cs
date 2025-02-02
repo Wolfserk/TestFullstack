@@ -47,20 +47,6 @@ namespace TestFullstack.Server.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "f1811537-a05b-49bb-bee9-7a9480267c12",
-                            Name = "Manager",
-                            NormalizedName = "MANAGER"
-                        },
-                        new
-                        {
-                            Id = "f67b8dc6-0bee-4732-85fc-ff31a90615ad",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -404,7 +390,7 @@ namespace TestFullstack.Server.Migrations
                     b.HasOne("TestFullstack.Server.Entities.Customer", "Customer")
                         .WithOne("User")
                         .HasForeignKey("TestFullstack.Server.Entities.ApplicationUser", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Customer");
                 });
@@ -425,7 +411,7 @@ namespace TestFullstack.Server.Migrations
                     b.HasOne("TestFullstack.Server.Entities.Item", "Item")
                         .WithMany("OrderItems")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TestFullstack.Server.Entities.Order", "Order")

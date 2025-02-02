@@ -5,18 +5,27 @@ using TestFullstack.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TestFullstack.Server.Entities;
+using TestFullstack.Server.Services.Customers;
 
 namespace TestFullstack.Server.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ICustomerService _customerService;
 
-        public UserService(UserManager<ApplicationUser> userManager)
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ICustomerService customerService)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
+            _customerService = customerService;
         }
 
+        public async Task<bool> RoleExistsAsync(string role)
+        {
+            return await _roleManager.RoleExistsAsync(role);
+        }
         public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user)
         {
             return await _userManager.GetUserAsync(user);
@@ -55,6 +64,7 @@ namespace TestFullstack.Server.Services.Users
         public async Task<IdentityResult> DeleteUserAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            if(user.CustomerId != null) await _customerService.DeleteCustomerAsync(user.CustomerId);
             return user == null ? IdentityResult.Failed() : await _userManager.DeleteAsync(user);
         }
 
@@ -73,7 +83,14 @@ namespace TestFullstack.Server.Services.Users
             if (!string.IsNullOrEmpty(model.Role))
             {
                 var currentRoles = await _userManager.GetRolesAsync(user);
+
+                if(user.CustomerId!=null)
+                {
+                   await _customerService.DeleteCustomerAsync(user.CustomerId);
+                }
+ 
                 var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                
                 if (!removeRolesResult.Succeeded)
                 {
                     return removeRolesResult;

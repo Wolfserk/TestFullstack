@@ -15,5 +15,6 @@ namespace TestFullstack.Server.Services.Users
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
         Task<IdentityResult> DeleteUserAsync(string userId);
         Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user);
+        Task<bool> RoleExistsAsync(string role);
     }
 }
