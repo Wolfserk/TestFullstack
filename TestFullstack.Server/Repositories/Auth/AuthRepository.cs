@@ -29,6 +29,11 @@ namespace TestFullstack.Server.Repositories.Auth
             return await _userManager.CreateAsync(user, password);
         }
 
+        public int CountUsers()
+        {
+            return _userManager.Users.Count();
+        }
+
         public async Task<SignInResult> PasswordSignInAsync(string email, string password, bool rememberMe)
         {
             return await _signInManager.PasswordSignInAsync(email, password, rememberMe, false);

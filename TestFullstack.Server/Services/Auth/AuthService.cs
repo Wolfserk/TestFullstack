@@ -30,7 +30,7 @@ namespace TestFullstack.Server.Services.Auth
             var role = await _authRepository.GetRolesAsync(user);
             if (!role.Any())
             {
-                role = new List<string> { _authRepository.FindByEmailAsync(email).Result.Id == "1" ? "Manager" : "Customer" };
+                role = new List<string> { _authRepository.CountUsers()<=1 ? "Manager" : "Customer" };
                 await _authRepository.AddToRoleAsync(user, role.First());
             }
 

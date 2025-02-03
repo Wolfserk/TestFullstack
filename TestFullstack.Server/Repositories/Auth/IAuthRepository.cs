@@ -11,6 +11,7 @@ namespace TestFullstack.Server.Repositories.Auth
         Task<SignInResult> PasswordSignInAsync(string email, string password, bool rememberMe);
         Task AddToRoleAsync(ApplicationUser user, string role);
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
+        public int CountUsers();
         Task SignOutAsync();
     }
 }
