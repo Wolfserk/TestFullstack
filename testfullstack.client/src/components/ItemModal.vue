@@ -74,13 +74,12 @@
         }
       };
 
-      // Функция для автоматического добавления дефисов
       const formatCode = (event: Event) => {
         const input = event.target as HTMLInputElement;
         let value = input.value.replace(/-/g, ""); // Убираем все дефисы
-        if (value.length > 2) value = value.slice(0, 2) + "-" + value.slice(2); // Добавляем первый дефис
-        if (value.length > 7) value = value.slice(0, 7) + "-" + value.slice(7); // Добавляем второй дефис
-        item.code = value.toUpperCase(); // Приводим к верхнему регистру
+        if (value.length > 2) value = value.slice(0, 2) + "-" + value.slice(2);
+        if (value.length > 7) value = value.slice(0, 7) + "-" + value.slice(7);
+        item.code = value.toUpperCase();
       };
 
       return { item, isCodeValid, isCategoryValid, close, onSubmit, formatCode };

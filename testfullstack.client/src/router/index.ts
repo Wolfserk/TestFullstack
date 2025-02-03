@@ -43,9 +43,9 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresGuest) {
     if (isAuthenticated) {
       alert("Вы уже авторизованы. Регистрация недоступна.");
-      next({ path: "/" }); // Перенаправляем на главную страницу
+      next({ path: "/" }); 
     } else {
-      next(); // Разрешаем доступ
+      next(); 
     }
     return;
   }
@@ -55,7 +55,6 @@ router.beforeEach((to, from, next) => {
   //  return;
   //}
 
-  // 🔹 Проверка на роль "Manager"
   if (to.meta.requiresManager) {
     if (!isAuthenticated) {
       alert("Вы не авторизованы. Пожалуйста, войдите в систему.");
@@ -69,7 +68,6 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  // 🔹 Проверка на роль "Customer"
   if (to.meta.requiresCustomer) {
     if (!isAuthenticated) {
       alert("Вы не авторизованы. Пожалуйста, войдите в систему.");

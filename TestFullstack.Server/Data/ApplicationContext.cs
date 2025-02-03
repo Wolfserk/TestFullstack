@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Data
 {
@@ -20,12 +20,6 @@ namespace TestFullstack.Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-  
-            //modelBuilder.Entity<Customer>()
-            //.HasOne(c => c.User)
-            //.WithOne(u => u.Customer)
-            //.HasForeignKey<ApplicationUser>(u => u.CustomerId)
-            //.OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Customer>()
              .HasOne(c => c.User)
@@ -48,19 +42,7 @@ namespace TestFullstack.Server.Data
             .HasOne(oi => oi.Item)
             .WithMany(i => i.OrderItems)
             .HasForeignKey(oi => oi.ItemId)
-            .OnDelete(DeleteBehavior.Cascade);
-            //.OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<IdentityRole>().HasData(
-            //   new IdentityRole {Id= "f1811537-a05b-49bb-bee9-7a9480267c12", Name = "Manager", NormalizedName = "MANAGER" },
-            //   new IdentityRole { Id = "f67b8dc6-0bee-4732-85fc-ff31a90615ad", Name = "Customer", NormalizedName = "CUSTOMER" }
-            //   );
-
-            //modelBuilder.Entity<Item>().HasData(
-            //  new Item { Name = "Item1", Code = "00-0000-AA00", Price = 2000.0M, Category = "Category1" },
-            //  new Item { Name = "Item1", Code = "01-0001-AA00", Price = 3500.0M, Category = "Category2" }
-            //  );
-
+            .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }

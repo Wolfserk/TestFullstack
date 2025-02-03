@@ -30,7 +30,6 @@
       </tbody>
     </table>
 
-    <!-- Модальное окно для добавления и редактирования -->
     <ItemModal v-if="isModalOpen" :isOpen="isModalOpen" :title="modalTitle" :itemData="currentItem"
                @close="closeModal" @submit="submitModal" />
   </div>

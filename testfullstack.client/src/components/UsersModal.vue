@@ -23,7 +23,7 @@
   import { defineComponent } from "vue";
 
   export default defineComponent({
-    name: "Modal",
+    name: "UserModal",
     props: {
       isOpen: { type: Boolean, required: true },
       title: { type: String, required: true },

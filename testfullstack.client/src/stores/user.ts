@@ -58,11 +58,11 @@ export const useUserStore = defineStore("user", {
             });
 
             if (response.data && response.data.customerId) {
-              console.log("✅ Получен customerId:", response.data.customerId);
+              //console.log("Получен customerId:", response.data.customerId);
               this.setCustomerId(response.data.customerId);
             }
           } catch (error) {
-            console.error("❌ Ошибка при получении customerId:", error);
+            console.error("Ошибка при получении customerId:", error);
           }
         },
 

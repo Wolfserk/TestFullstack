@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.Data;
 using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 using TestFullstack.Server.Repositories.Orders;
 
 namespace TestFullstack.Server.Services.Orders

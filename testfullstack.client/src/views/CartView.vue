@@ -54,22 +54,18 @@
       const router = useRouter();
       const isCustomerModalOpen = ref(false);
 
-      // ✅ Проверяем `customerId` при загрузке страницы
       onMounted(async () => {
         await userStore.fetchCustomerId();
         cartStore.loadCart();
         cartStore.fetchDiscount();
 
         if (!userStore.customerId) {
-          console.log("❌ customerId отсутствует, открываем CreateCustomerModal...");
           isCustomerModalOpen.value = true;
         }
       });
 
-      // 🔄 Следим за `customerId`, если обновился — закрываем модальное окно
       watch(() => userStore.customerId, (newCustomerId) => {
         if (newCustomerId) {
-          console.log("✅ customerId обновлён:", newCustomerId);
           isCustomerModalOpen.value = false;
         }
       });
@@ -77,14 +73,12 @@
       const cart = computed(() => cartStore.cart);
       const discount = computed(() => cartStore.discount);
 
-      // ✅ Функция расчёта скидки
       const getDiscountedPrice = (price: number) => {
         return discount.value > 0
           ? (price * (1 - discount.value / 100)).toFixed(2)
           : price.toFixed(2);
       };
 
-      // ✅ Итоговая сумма с учётом скидки
       const total = computed(() =>
         cart.value.reduce(
           (sum, item) => sum + parseFloat(getDiscountedPrice(item.price)) * item.quantity,
@@ -96,23 +90,18 @@
         cartStore.removeFromCart(id);
       };
 
-      // ✅ Перед оформлением заказа проверяем `customerId`
       const handleOrder = async () => {
         //await userStore.fetchCustomerId();
-        //console.log("⚡ handleOrder() проверяет customerId:", userStore.customerId);
 
         if (!userStore.customerId) {
-          console.log("❌ customerId не найден...");
+          console.log("customerId не найден...");
         } else {
-          console.log("✅ customerId найден, отправляем заказ...");
           await cartStore.submitOrder();
           router.push("/orders");
         }
       };
 
-      // ✅ После сохранения данных обновляем `customerId`
       const onCustomerSaved = (customer: { id: string }) => {
-        console.log("✅ Новый customerId:", customer.id);
         userStore.setCustomerId(customer.id);
         isCustomerModalOpen.value = false;
       };

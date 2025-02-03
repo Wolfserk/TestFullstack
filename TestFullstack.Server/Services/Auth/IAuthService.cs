@@ -1,4 +1,4 @@
-﻿using TestFullstack.Server.Entities;
+﻿using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Services.Auth
 {

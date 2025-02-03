@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Customers;
 using TestFullstack.Server.Services.Users;
 
@@ -28,19 +27,9 @@ namespace TestFullstack.Server.Controllers
             return Ok(customers);
         }
 
-        //[HttpGet("{code}")]
-        //public async Task<IActionResult> GetByCode(string code)
-        //{
-        //    var customer = await _customerService.GetCustomerByCodeAsync(code);
-        //    if (customer == null)
-        //        return NotFound();
-
-        //    return Ok(customer);
-        //}
-
         [Authorize(Roles = "Customer")]
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequest request)
+        public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDto request)
         {
             if (request == null || string.IsNullOrEmpty(request.Name))
             {
@@ -54,11 +43,10 @@ namespace TestFullstack.Server.Controllers
                 {
                     return BadRequest("Пользователь не найден.");
                 }
-                var customer = await _customerService.AddCustomerAsync(request.Name, request.Address, user!.Id);
+                var customer = await _customerService.AddCustomerAsync(request);
                 await _customerService.AddCustomerToUserAsync(customer.Id, user);
 
                 return Ok(customer.Id);
-                //return StatusCode(200);
             }
             catch (Exception ex)
             {
@@ -67,12 +55,11 @@ namespace TestFullstack.Server.Controllers
         }
 
         [Authorize(Roles = "Manager")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] UpdateCustomerDto dto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerDto dto)
         {
-            var customer = await _customerService.UpdateCustomerAsync(id, dto);
+            var customer = await _customerService.UpdateCustomerAsync(dto);
             if (customer == null) return NotFound("Заказчик не найден");
-
             return Ok(customer);
         }
 

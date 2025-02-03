@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Auth;
 
@@ -24,7 +24,7 @@ namespace TestFullstack.Server.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -34,7 +34,7 @@ namespace TestFullstack.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             var (success, message, data) = await _authService.LoginAsync(model.Email, model.Password, model.RememberMe);
             return success ? Ok(data) : Unauthorized(message);

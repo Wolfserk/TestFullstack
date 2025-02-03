@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Entities;
 using TestFullstack.Server.Models;
 using TestFullstack.Server.Services.Orders;
 using TestFullstack.Server.Services.Users;
@@ -79,7 +78,7 @@ namespace TestFullstack.Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> Create([FromBody] OrderRequestModel model)
+        public async Task<IActionResult> Create([FromBody] OrderRequestDto model)
         {
             if (model.Items == null || !model.Items.Any())
                 return BadRequest("Заказ не может быть пустым.");

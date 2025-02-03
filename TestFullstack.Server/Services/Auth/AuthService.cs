@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 using TestFullstack.Server.Repositories.Auth;
 
 namespace TestFullstack.Server.Services.Auth

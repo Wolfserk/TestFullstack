@@ -1,6 +1,6 @@
-﻿namespace TestFullstack.Server.Models
+﻿namespace TestFullstack.Server.DTOs
 {
-    public class OrderRequestModel
+    public class OrderRequestDto
     {
         public List<OrderItemRequest> Items { get; set; }
     }

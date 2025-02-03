@@ -1,17 +1,24 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Repositories.Users
 {
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserRepository(UserManager<ApplicationUser> userManager)
+        public UserRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        public async Task<bool> RoleExistsAsync(string role)
+        {
+            return await _roleManager.RoleExistsAsync(role);
         }
 
         public async Task<List<ApplicationUser>> GetAllUsersAsync()
@@ -24,7 +31,7 @@ namespace TestFullstack.Server.Repositories.Users
             return await _userManager.FindByIdAsync(userId);
         }
 
-        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal user) // ✅ Реализация метода
+        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal user)
         {
             return await _userManager.GetUserAsync(user);
         }
@@ -43,12 +50,6 @@ namespace TestFullstack.Server.Repositories.Users
         {
             return await _userManager.DeleteAsync(user);
         }
-
-        //public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
-        //{
-        //    Console.WriteLine(user.Id);
-        //    return await _userManager.UpdateAsync(user);
-        //}
 
         public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
         {

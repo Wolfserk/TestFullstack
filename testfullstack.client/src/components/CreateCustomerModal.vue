@@ -38,7 +38,6 @@
       const createCustomer = ref({ name: "", address: "", userId: props.userId });
 
       const submitCustomer = async () => {
-        console.log("Токен:", userStore.token);
         try {
           const response = await axios.post("https://localhost:7034/api/customers/", createCustomer.value, {
             headers: { Authorization: `Bearer ${userStore.token}` },
@@ -46,7 +45,6 @@
           console.log(response.data);
           if (response.data) {
             userStore.setCustomerId(response.data);
-            console.log("Закрытие модального окна...");
             emit("close");
             close();
             router.push("/");

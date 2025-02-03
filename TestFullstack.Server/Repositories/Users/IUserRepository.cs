@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Repositories.Users
 {
@@ -15,5 +15,6 @@ namespace TestFullstack.Server.Repositories.Users
         Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
         Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role);
         Task<IdentityResult> RemoveFromRoleAsync(ApplicationUser user, string role);
+        Task<bool> RoleExistsAsync(string role);
     }
 }

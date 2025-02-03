@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.Data;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Repositories.Orders
 {
@@ -33,13 +33,10 @@ namespace TestFullstack.Server.Repositories.Orders
 
         public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
-            //return await _context.Orders
-            //    .Include(o => o.OrderItems)
-            //    .FirstOrDefaultAsync(o => o.Id == id);
             return await _context.Orders
-       .Include(o => o.OrderItems)
-       .ThenInclude(oi => oi.Item) // Включаем связанные данные
-       .FirstOrDefaultAsync(o => o.Id == id);
+               .Include(o => o.OrderItems)
+               .ThenInclude(oi => oi.Item)
+               .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<Order> PlaceOrderAsync(Order order)

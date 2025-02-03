@@ -1,6 +1,6 @@
-﻿namespace TestFullstack.Server.Models
+﻿namespace TestFullstack.Server.DTOs
 {
-    public class CreateCustomerRequest
+    public class CreateCustomerDto
     {
         public string Name { get; set; }
         public string? Address { get; set; }

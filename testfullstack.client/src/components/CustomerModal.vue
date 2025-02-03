@@ -18,8 +18,7 @@
                  pattern="^\d{4}-\d{4}$"
                  class="w-full p-2 mb-4 border rounded-lg"
                  required />
-
-         
+       
           <label class="block mb-2 font-semibold">Адрес</label>
           <input v-model="editedCustomer.address" type="text" class="w-full p-2 mb-4 border rounded-lg"/>
 
@@ -67,10 +66,9 @@
 
       const submitCustomer = async () => {
         try {
-          await axios.put(`https://localhost:7034/api/customers/${editedCustomer.value.id}`, editedCustomer.value, {
+          await axios.put(`https://localhost:7034/api/customers/`, editedCustomer.value, {
             headers: { Authorization: `Bearer ${userStore.token}` }
           });
-
           alert("Данные заказчика обновлены!");
           emit("save", editedCustomer.value);
           emit("close");

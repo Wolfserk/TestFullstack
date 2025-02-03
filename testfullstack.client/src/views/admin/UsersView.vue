@@ -84,7 +84,7 @@
   import { useUserStore } from "../../stores/user";
 
   export default defineComponent({
-    name: "UsersPage",
+    name: "UsersView",
     components: { UsersModal },
     setup() {
       const userStore = useUserStore();
@@ -103,7 +103,6 @@
             headers: { Authorization: `Bearer ${userStore.token}` },
           });
           
-          console.log(userStore.userId);
           //users.value = response.data;
           users.value = response.data.filter((user: any) => user.id !== userStore.userId);
         } catch (error) {
@@ -124,6 +123,7 @@
           fetchUsers();
           closeAddModal();
         } catch (error) {
+          alert("Ошибка при добавлении, проверьте корректность введенных данных!");
           console.error("Ошибка при добавлении пользователя:", error);
         }
       };
@@ -135,16 +135,14 @@
       const closeEditModal = () => (isEditModalOpen.value = false);
       const submitEditModal = async () => {
         try {
-          await axios.put(`https://localhost:7034/api/users/${editUser.value.id}`, {
-            email: editUser.value.email,
-            role: editUser.value.role,
-          }, {
-            headers: { Authorization: `Bearer ${userStore.token}` },
+          await axios.put(`https://localhost:7034/api/users/`, editUser.value, {
+            headers: { Authorization: `Bearer ${userStore.token}` }
           });
           alert("Информация о пользователе обновлена!");
           fetchUsers();
           closeEditModal();
         } catch (error) {
+          alert("Ошибка при редактировании, проверьте корректность введенных данных!");
           console.error("Ошибка при редактировании пользователя:", error);
         }
       };
@@ -158,6 +156,7 @@
             alert("Пользователь успешно удален.");
             fetchUsers();
           } catch (error) {
+            alert("Ошибка при удалении пользователя!");
             console.error("Ошибка при удалении пользователя:", error);
           }
         }
@@ -183,3 +182,5 @@
     },
   });
 </script>
+
+

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using TestFullstack.Server.Models;
+using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Services.Users;
 
 namespace TestFullstack.Server.Controllers
@@ -40,31 +40,14 @@ namespace TestFullstack.Server.Controllers
             return Ok(userList);
         }
 
-        [HttpPost("{id}/add-to-role")]
-        public async Task<IActionResult> AddToRole(string id, [FromBody] string role)
-        {
-            var result = await _userService.AddToRoleAsync(id, role);
-            if (!result.Succeeded) return BadRequest(result.Errors);
-
-            return Ok("Роль добавлена пользователю");
-        }
-
-        [HttpPost("{id}/remove-from-role")]
-        public async Task<IActionResult> RemoveFromRole(string id, [FromBody] string role)
-        {
-            var result = await _userService.RemoveFromRoleAsync(id, role);
-            if (!result.Succeeded) return BadRequest(result.Errors);
-
-            return Ok($"Пользователь с ID {id} был удален из роли {role}");
-        }
-
         [HttpPost("add")]
-        public async Task<IActionResult> AddUser([FromBody] RegisterModel model)
+        public async Task<IActionResult> AddUser([FromBody] AddUserDto model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (!await _userService.RoleExistsAsync(model.Role)) return BadRequest($"Роль '{model.Role}' не существует");
 
             var result = await _userService.AddUserAsync(model);
+
             if (!result.Succeeded) return BadRequest(result.Errors);
 
             return Ok("Пользователь успешно добавлен");
@@ -79,18 +62,17 @@ namespace TestFullstack.Server.Controllers
             return Ok($"Пользователь с ID {id} был удален");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string Id, [FromBody] UpdateUserModel model)
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Проверяем, существует ли новая роль
             if (!await _userService.RoleExistsAsync(model.Role))
             {
                 return BadRequest("Роли не существует");
             }
-            var result = await _userService.UpdateUserAsync(Id, model);
+            var result = await _userService.UpdateUserAsync(model);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 

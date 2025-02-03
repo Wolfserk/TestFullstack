@@ -1,34 +1,32 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TestFullstack.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using TestFullstack.Server.Entities;
 using TestFullstack.Server.Services.Customers;
 using TestFullstack.Server.Repositories.Users;
+using TestFullstack.Server.DTOs;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ICustomerService _customerService;
 
-        public UserService(IUserRepository userRepository, RoleManager<IdentityRole> roleManager, ICustomerService customerService)
+        public UserService(IUserRepository userRepository, ICustomerService customerService)
         {
             _userRepository = userRepository;
-            _roleManager = roleManager;
             _customerService = customerService;
         }
 
         public async Task<bool> RoleExistsAsync(string role)
         {
-            return await _roleManager.RoleExistsAsync(role);
+            return await _userRepository.RoleExistsAsync(role);
         }
 
-        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal user) // ✅ Используем метод репозитория
+        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal user)
         {
             return await _userRepository.GetUserAsync(user);
         }
@@ -43,25 +41,13 @@ namespace TestFullstack.Server.Services.Users
             return await _userRepository.GetRolesAsync(user);
         }
 
-        public async Task<IdentityResult> AddUserAsync(RegisterModel model)
+        public async Task<IdentityResult> AddUserAsync(AddUserDto model)
         {
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userRepository.CreateUserAsync(user, model.Password);
             if (!result.Succeeded) return result;
 
             return await _userRepository.AddToRoleAsync(user, model.Role);
-        }
-
-        public async Task<IdentityResult> AddToRoleAsync(string userId, string role)
-        {
-            var user = await _userRepository.GetUserByIdAsync(userId);
-            return user == null ? IdentityResult.Failed() : await _userRepository.AddToRoleAsync(user, role);
-        }
-
-        public async Task<IdentityResult> RemoveFromRoleAsync(string userId, string role)
-        {
-            var user = await _userRepository.GetUserByIdAsync(userId);
-            return user == null ? IdentityResult.Failed() : await _userRepository.RemoveFromRoleAsync(user, role);
         }
 
         public async Task<IdentityResult> DeleteUserAsync(string userId)
@@ -73,15 +59,15 @@ namespace TestFullstack.Server.Services.Users
             return user == null ? IdentityResult.Failed() : await _userRepository.DeleteUserAsync(user);
         }
 
-        public async Task<IdentityResult> UpdateUserAsync(string Id, UpdateUserModel model)
+        public async Task<IdentityResult> UpdateUserAsync(UpdateUserDto model)
         {
-            var user = await _userRepository.GetUserByIdAsync(Id);
+            var user = await _userRepository.GetUserByIdAsync(model.Id);
             if (user == null)
             {
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = $"Пользователь с Id '{Id}' не найден"
+                    Description = $"Пользователь с Id '{model.Id}' не найден"
                 });
             }
 

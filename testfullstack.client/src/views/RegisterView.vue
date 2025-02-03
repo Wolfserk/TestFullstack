@@ -64,7 +64,6 @@
         "Passwords must have at least one lowercase ('a'-'z').": "Пароль должен содержать хотя бы одну строчную букву.",
         "Passwords must have at least one uppercase ('A'-'Z').": "Пароль должен содержать хотя бы одну заглавную букву.",
         "Passwords must have at least one digit ('0'-'9').": "Пароль должен содержать хотя бы одну цифру.",
-        "Username is already taken.": "Email уже занят.",
       };
 
       const register = async () => {
@@ -76,22 +75,17 @@
         }
 
         try {
-          console.log("🔹 Отправляем запрос на регистрацию...");
           const response = await axios.post("https://localhost:7034/api/auth/register", {
             email: email.value,
             password: password.value,
             confirmPassword: confirmPassword.value,
           });
 
-          console.log("✅ Регистрация успешна:", response.data);
 
-          // 🔹 Вход после регистрации
           const loginResponse = await axios.post("https://localhost:7034/api/auth/login", {
             email: email.value,
             password: password.value,
           });
-
-          console.log("✅ Вход выполнен:", loginResponse.data);
 
           const { token, role, userId: id, customerId } = loginResponse.data;
           userStore.setUser(id, email.value, role, token, null );
@@ -102,7 +96,7 @@
           router.push("/");
           
         } catch (error: any) {
-          console.error("❌ Ошибка при регистрации:", error.response?.data || error.message);
+          console.error("Ошибка при регистрации:", error.response?.data || error.message);
 
           if (Array.isArray(error.response?.data)) {
             errorMessages.value = error.response.data.map((err: { description: string }) =>

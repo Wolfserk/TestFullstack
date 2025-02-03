@@ -41,14 +41,13 @@
       const itemPrices = reactive<{ [key: string]: number }>({});
       const isCustomer = computed(() => userStore.role === "Customer");
 
-      // 🟢 Загружаем товары
       const fetchItems = async () => {
         try {
           const response = await axios.get("https://localhost:7034/api/items");
           items.value = response.data;
           response.data.forEach((item: any) => {
             quantities[item.id] = 1;
-            fetchItemPrice(item.id); // Загружаем актуальную цену
+            fetchItemPrice(item.id);
           });
         } catch (error) {
           console.error("Ошибка при загрузке товаров:", error);
@@ -57,7 +56,6 @@
         }
       };
 
-      // 🟢 Загружаем цены
       const fetchItemPrice = async (itemId: string) => {
         try {
           const response = await axios.post("https://localhost:7034/api/items/get-prices", { itemIds: [itemId] });
@@ -68,7 +66,6 @@
         }
       };
 
-      // 🟢 Добавление товара в корзину (с учетом количества)
       const addToCart = async (item: any, quantity: number) => {
         if (!itemPrices[item.id]) {
           await fetchItemPrice(item.id);
@@ -76,13 +73,20 @@
         cartStore.addToCart({ id: item.id, name: item.name, price: itemPrices[item.id] }, quantity);
       };
 
-      // 🟢 Загружаем корзину при открытии страницы
       onMounted(() => {
         fetchItems();
         cartStore.loadCart();
+        cartStore.switchUserCart(); //
       });
 
-      return { items, loading, quantities, addToCart, isCustomer, itemPrices };
+      return {
+        items,
+        loading,
+        quantities,
+        addToCart,
+        isCustomer,
+        itemPrices
+      };
     },
   });
 </script>

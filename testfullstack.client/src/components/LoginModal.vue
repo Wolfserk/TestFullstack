@@ -53,6 +53,7 @@
 
           const { token, role, userId: id, customerId } = response.data;
           userStore.setUser(id, email.value, role, token, customerId);
+         
 
           if (role === "Manager") {
             router.push("/admin");
@@ -67,8 +68,6 @@
           errorMessage.value = "Неверный email или пароль.";
         }
       };
-
-
 
       const close = () => {
         emit("close");

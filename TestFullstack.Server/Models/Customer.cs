@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TestFullstack.Server.Entities
+namespace TestFullstack.Server.Models
 {
     public class Customer
     {

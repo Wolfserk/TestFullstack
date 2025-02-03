@@ -1,6 +1,5 @@
 <template>
   <div class="flex justify-center">
-    <!-- Боковая панель фильтрации -->
     <div class="w-1/6 p-4">
       <h2 class="text-lg font-bold mb-4">Фильтр</h2>
 
@@ -19,9 +18,8 @@
       </button>
     </div>
 
-    <!-- Основная часть с заказами -->
     <div class="w-2/5 p-4">
-      <!-- Уменьшил ширину списка заказов -->
+
       <h1 class="text-2xl font-bold mb-4 text-center">Мои заказы</h1>
 
       <div v-if="loading" class="text-center">Загрузка...</div>

@@ -1,5 +1,5 @@
 ﻿using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Services.Orders
 {

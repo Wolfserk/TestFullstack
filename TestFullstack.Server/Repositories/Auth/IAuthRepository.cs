@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Repositories.Auth
 {

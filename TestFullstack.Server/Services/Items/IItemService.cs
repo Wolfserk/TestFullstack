@@ -1,5 +1,5 @@
 ﻿using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Services.Items
 {
@@ -10,7 +10,6 @@ namespace TestFullstack.Server.Services.Items
         Task<Item> AddItemAsync(ItemDto itemDto);
         Task<Item> UpdateItemAsync(Guid id, ItemDto itemDto);
         Task<bool> DeleteItemAsync(Guid id);
-
         Task<List<ItemPriceDto>> GetItemPricesAsync(List<Guid> itemIds);
     }
 }

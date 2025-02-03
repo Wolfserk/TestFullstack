@@ -9,13 +9,13 @@ using TestFullstack.Server.Services.Customers;
 using TestFullstack.Server.Services.Items;
 using TestFullstack.Server.Services.Orders;
 using TestFullstack.Server.Services.Users;
-using TestFullstack.Server.Entities;
 using TestFullstack.Server.Services.Auth;
 using TestFullstack.Server.Repositories.Auth;
 using TestFullstack.Server.Repositories.Customers;
 using TestFullstack.Server.Repositories.Items;
 using TestFullstack.Server.Repositories.Orders;
 using TestFullstack.Server.Repositories.Users;
+using TestFullstack.Server.Models;
 
 
 namespace TestFullstack.Server

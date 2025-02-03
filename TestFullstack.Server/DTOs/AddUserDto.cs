@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TestFullstack.Server.Models
+namespace TestFullstack.Server.DTOs
 {
-    public class LoginModel
+    public class AddUserDto
     {
         [Required]
         [EmailAddress]
@@ -12,6 +12,6 @@ namespace TestFullstack.Server.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public bool RememberMe { get; set; }
+        public string Role { get; set; }
     }
 }

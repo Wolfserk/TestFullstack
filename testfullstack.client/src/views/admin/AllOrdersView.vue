@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col lg:flex-row p-4">
-    <!-- Панель фильтрации -->
+  
     <div class="lg:w-1/6 lg:pr-4 mb-6 lg:mb-0">
       <h2 class="text-xl font-bold mb-4">Фильтры</h2>
       <label class="block mb-2">Статус заказа:</label>
@@ -15,7 +15,7 @@
       </button>
     </div>
 
-    <!-- Таблица заказов -->
+
     <div class="flex-1 overflow-x-auto">
       <h1 class="text-2xl font-bold text-center mb-6">Список заказов</h1>
       <table class="min-w-full border-collapse border border-gray-300">
@@ -49,7 +49,6 @@
       </table>
     </div>
 
-    <!-- Модальное окно подтверждения заказа -->
     <div v-if="isConfirmModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 class="text-lg font-bold mb-4">Подтвердить заказ</h2>
@@ -91,14 +90,13 @@
   const orderNumber = ref("");
   const shipmentDate = ref("");
 
-  // Вычисляем минимальную дату доставки на основе даты заказа
+  
   const minShipmentDate = computed(() => {
     if (!selectedOrderId.value) return "";
 
     const selectedOrder = orders.value.find(order => order.id === selectedOrderId.value);
     if (!selectedOrder || !selectedOrder.orderDate) return "";
 
-    // Возвращаем дату заказа в формате YYYY-MM-DD
     return new Date(selectedOrder.orderDate).toISOString().split("T")[0];
   });
 
@@ -108,7 +106,7 @@
         headers: { Authorization: `Bearer ${userStore.token}` },
       });
       orders.value = response.data;
-      applyFilters(); // Применяем фильтры после загрузки данных
+      applyFilters(); 
     } catch (error) {
       console.error("Ошибка при загрузке заказов:", error);
     }
@@ -137,7 +135,6 @@
       return;
     }
 
-    // Проверка, что дата доставки не раньше даты заказа
     const selectedOrder = orders.value.find(order => order.id === selectedOrderId.value);
     if (selectedOrder && selectedOrder.orderDate) {
       const orderDate = new Date(selectedOrder.orderDate).getTime();
@@ -162,7 +159,7 @@
 
       alert("Заказ подтвержден!");
       isConfirmModalOpen.value = false;
-      await fetchOrders(); // Обновляем список заказов
+      await fetchOrders();
     } catch (error) {
       alert("Ошибка при подтверждении заказа.");
       console.error(error);
@@ -180,7 +177,7 @@
       );
 
       alert("Заказ завершен!");
-      await fetchOrders(); // Обновляем список заказов
+      await fetchOrders();
     } catch (error) {
       alert("Ошибка при завершении заказа.");
       console.error(error);

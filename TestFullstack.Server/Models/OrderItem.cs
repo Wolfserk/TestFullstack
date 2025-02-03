@@ -1,4 +1,4 @@
-﻿namespace TestFullstack.Server.Entities
+﻿namespace TestFullstack.Server.Models
 {
     public class OrderItem
     {
@@ -9,7 +9,6 @@
 
         public Guid ItemId { get; set; }
         public Item Item { get; set; } = null!;
-
 
         public int ItemsCount { get; set; }
         public decimal ItemPrice { get; set; }

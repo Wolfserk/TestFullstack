@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.Data;
 using TestFullstack.Server.DTOs;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 using TestFullstack.Server.Repositories.Customers;
 using TestFullstack.Server.Repositories.Users;
 
@@ -23,25 +23,18 @@ namespace TestFullstack.Server.Services.Customers
             return await _customerRepository.GetAllAsync();
         }
 
-        public async Task<Customer?> GetCustomerByCodeAsync(string code)
-        {
-            return await _customerRepository.GetByCodeAsync(code);
-        }
-
-       
-
-        public async Task<Customer> AddCustomerAsync(string name, string? address, string userId)
+        public async Task<Customer> AddCustomerAsync(CreateCustomerDto dto)
         {
             var year = DateTime.UtcNow.Year;
-            var lastCustomer = (await _customerRepository.GetAllAsync())
-                .Where(c => c.Code.StartsWith(year.ToString()))
-                .OrderByDescending(c => c.Code)
-                .FirstOrDefault();
+
+            var lastCustomer = await _customerRepository.GetLastCustomerByYearAsync(year);
+
 
             int lastId = 1;
             if (lastCustomer != null)
             {
                 var parts = lastCustomer.Code.Split('-');
+
                 if (parts.Length == 2 && int.TryParse(parts[0], out int parsedId))
                 {
                     lastId = parsedId + 1;
@@ -51,17 +44,18 @@ namespace TestFullstack.Server.Services.Customers
             var customer = new Customer
             {
                 Id = Guid.NewGuid(),
-                Name = name,
-                Address = address,
+                Name = dto.Name,
+                Address = dto.Address,
                 Discount = 0,
-                Code = $"{lastId:D4}-{year}",
+                Code = $"{lastId:D4}-{year}"
             };
-           
 
-            return await _customerRepository.AddAsync(customer);
+            await _customerRepository.AddAsync(customer);
+            return customer;
         }
 
-        public async Task<Customer?> UpdateCustomerAsync(Guid id, UpdateCustomerDto dto)
+
+        public async Task<Customer?> UpdateCustomerAsync(UpdateCustomerDto dto)
         {
             var customer = new Customer
             {
@@ -70,7 +64,7 @@ namespace TestFullstack.Server.Services.Customers
                 Address = dto.Address,
                 Discount = dto.Discount
             };
-            return await _customerRepository.UpdateAsync(id, customer);
+            return await _customerRepository.UpdateAsync(dto.Id, customer);
         }
 
         public async Task<int> GetCustomerDiscountAsync(Guid customerId)
@@ -89,15 +83,13 @@ namespace TestFullstack.Server.Services.Customers
             var existingCustomer = await _customerRepository.GetByIdAsync(customerId.Value);
             if (existingCustomer == null)
             {
-                Console.WriteLine($"❌ Ошибка: CustomerId {customerId} не найден в таблице Customers.");
+                Console.WriteLine($"Ошибка: CustomerId {customerId} не найден в таблице Customers.");
                 return;
             }
 
             user.CustomerId = customerId;
-            Console.WriteLine($"✅ Обновляем user {user.Id} с customerId {customerId}");
 
             var result = await _userRepository.UpdateUserAsync(user);
-            Console.WriteLine($"Результат обновления: {result.Succeeded}");
         }
     }
 }

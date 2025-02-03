@@ -17,9 +17,6 @@ namespace TestFullstack.Server.Controllers
             _itemService = itemService;
         }
 
-        /// <summary>
-        /// Получить список всех товаров
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllItems()
         {
@@ -27,9 +24,6 @@ namespace TestFullstack.Server.Controllers
             return Ok(items);
         }
 
-        /// <summary>
-        /// Получить товар по ID
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemById(Guid id)
         {
@@ -40,9 +34,7 @@ namespace TestFullstack.Server.Controllers
             return Ok(item);
         }
 
-        /// <summary>
-        /// Добавить новый товар (только для менеджеров)
-        /// </summary>
+
         [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> AddItem([FromBody] ItemDto itemDto)
@@ -54,9 +46,7 @@ namespace TestFullstack.Server.Controllers
             return CreatedAtAction(nameof(GetItemById), new { id = item.Id }, item);
         }
 
-        /// <summary>
-        /// Обновить существующий товар (только для менеджеров)
-        /// </summary>
+
         [Authorize(Roles = "Manager")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItem(Guid id, [FromBody] ItemDto itemDto)
@@ -71,9 +61,6 @@ namespace TestFullstack.Server.Controllers
             return Ok(updatedItem);
         }
 
-        /// <summary>
-        /// Удалить товар (только для менеджеров)
-        /// </summary>
         [Authorize(Roles = "Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(Guid id)
@@ -85,12 +72,12 @@ namespace TestFullstack.Server.Controllers
             return Ok(new { message = "Товар успешно удален" });
         }
 
-        /// <summary>
-        /// Получить цены товаров по списку ID
-        /// </summary>
         [HttpPost("get-prices")]
         public async Task<IActionResult> GetItemPrices([FromBody] ItemPriceRequestDto request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (request.ItemIds == null || !request.ItemIds.Any())
                 return BadRequest("Список товаров пуст");
 

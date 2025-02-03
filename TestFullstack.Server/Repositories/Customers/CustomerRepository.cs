@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TestFullstack.Server.Data;
-using TestFullstack.Server.Entities;
+using TestFullstack.Server.Models;
 
 namespace TestFullstack.Server.Repositories.Customers
 {
@@ -18,9 +18,12 @@ namespace TestFullstack.Server.Repositories.Customers
             return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer?> GetByCodeAsync(string code)
+        public async Task<Customer?> GetLastCustomerByYearAsync(int year)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Code == code);
+            return await _context.Customers
+                .Where(c => c.Code.EndsWith($"-{year}"))
+                .OrderByDescending(c => c.Code)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Customer?> GetByIdAsync(Guid id)
@@ -39,8 +42,6 @@ namespace TestFullstack.Server.Repositories.Customers
         {
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return null;
-
-
 
             customer.Name = customerData.Name;
             customer.Code = customerData.Code;

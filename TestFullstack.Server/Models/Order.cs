@@ -1,4 +1,4 @@
-﻿namespace TestFullstack.Server.Entities
+﻿namespace TestFullstack.Server.Models
 {
     public class Order
     {
