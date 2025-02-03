@@ -17,6 +17,6 @@ namespace TestFullstack.Server.Models
         [Compare("Password")]
         public string? ConfirmPassword { get; set; }
 
-        public string? Role { get; set; } // Новое поле для роли
+        public string? Role { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace TestFullstack.Server.Repositories.Customers
         }
 
         public async Task<Customer> AddAsync(Customer customer)
-        {
+        {     
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return customer;
@@ -39,6 +39,8 @@ namespace TestFullstack.Server.Repositories.Customers
         {
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null) return null;
+
+
 
             customer.Name = customerData.Name;
             customer.Code = customerData.Code;

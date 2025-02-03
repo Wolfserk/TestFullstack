@@ -23,6 +23,7 @@ namespace TestFullstack.Server.Controllers
             _orderService = orderService;
             _userService = userService;
         }
+
         [HttpGet]
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAll()
@@ -60,7 +61,7 @@ namespace TestFullstack.Server.Controllers
         {
             var user = await _userService.GetUserAsync(User);
 
-            if (user == null || user.CustomerId == null)
+            if (user?.CustomerId == null)
                 return BadRequest("Пользователь не привязан к заказчику.");
 
             var orders = await _orderService.GetAllUserOrdersAsync((Guid)user.CustomerId);
@@ -71,8 +72,7 @@ namespace TestFullstack.Server.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null)
-                return NotFound();
+            if (order == null) return NotFound();
 
             return Ok(order);
         }
@@ -85,7 +85,7 @@ namespace TestFullstack.Server.Controllers
                 return BadRequest("Заказ не может быть пустым.");
 
             var user = await _userService.GetUserAsync(User);
-            if (user == null || user.CustomerId == null)
+            if (user?.CustomerId == null)
                 return BadRequest("Пользователь не привязан к заказчику.");
 
             var orderItems = model.Items.Select(i => new OrderItem
@@ -97,7 +97,6 @@ namespace TestFullstack.Server.Controllers
             }).ToList();
 
             var order = await _orderService.PlaceOrderAsync((Guid)user.CustomerId, orderItems);
-
             return Ok(new { message = "Заказ успешно создан!", orderId = order.Id });
         }
 
@@ -107,9 +106,7 @@ namespace TestFullstack.Server.Controllers
         {
             var order = await _orderService.GetOrderByIdAsync(id);
             if (order == null) return NotFound("Заказ не найден");
-
-            if (order.Status != "Новый")
-                return BadRequest("Можно удалить только новые заказы");
+            if (order.Status != "Новый") return BadRequest("Можно удалить только новые заказы");
 
             await _orderService.DeleteOrderAsync(id);
             return Ok("Заказ удален");

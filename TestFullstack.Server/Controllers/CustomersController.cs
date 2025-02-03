@@ -28,15 +28,15 @@ namespace TestFullstack.Server.Controllers
             return Ok(customers);
         }
 
-        [HttpGet("{code}")]
-        public async Task<IActionResult> GetByCode(string code)
-        {
-            var customer = await _customerService.GetCustomerByCodeAsync(code);
-            if (customer == null)
-                return NotFound();
+        //[HttpGet("{code}")]
+        //public async Task<IActionResult> GetByCode(string code)
+        //{
+        //    var customer = await _customerService.GetCustomerByCodeAsync(code);
+        //    if (customer == null)
+        //        return NotFound();
 
-            return Ok(customer);
-        }
+        //    return Ok(customer);
+        //}
 
         [Authorize(Roles = "Customer")]
         [HttpPost]
@@ -50,7 +50,13 @@ namespace TestFullstack.Server.Controllers
             try
             {
                 var user = await _userService.GetUserAsync(User);
-                var customer = await _customerService.AddCustomerAsync(request.Name, request.Address, user.Id);
+                if (user == null)
+                {
+                    return BadRequest("Пользователь не найден.");
+                }
+                var customer = await _customerService.AddCustomerAsync(request.Name, request.Address, user!.Id);
+                await _customerService.AddCustomerToUserAsync(customer.Id, user);
+
                 return Ok(customer.Id);
                 //return StatusCode(200);
             }

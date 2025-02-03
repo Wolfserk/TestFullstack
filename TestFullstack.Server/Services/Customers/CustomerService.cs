@@ -3,16 +3,19 @@ using TestFullstack.Server.Data;
 using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Entities;
 using TestFullstack.Server.Repositories.Customers;
+using TestFullstack.Server.Repositories.Users;
 
 namespace TestFullstack.Server.Services.Customers
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IUserRepository _userRepository;
 
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(ICustomerRepository customerRepository, IUserRepository userRepository)
         {
             _customerRepository = customerRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<List<Customer>> GetAllCustomersAsync()
@@ -24,6 +27,8 @@ namespace TestFullstack.Server.Services.Customers
         {
             return await _customerRepository.GetByCodeAsync(code);
         }
+
+       
 
         public async Task<Customer> AddCustomerAsync(string name, string? address, string userId)
         {
@@ -51,6 +56,7 @@ namespace TestFullstack.Server.Services.Customers
                 Discount = 0,
                 Code = $"{lastId:D4}-{year}",
             };
+           
 
             return await _customerRepository.AddAsync(customer);
         }
@@ -76,6 +82,22 @@ namespace TestFullstack.Server.Services.Customers
         {
             if (customerId == null) return;
             await _customerRepository.DeleteAsync(customerId.Value);
+        }
+
+        public async Task AddCustomerToUserAsync(Guid? customerId, ApplicationUser user)
+        {
+            var existingCustomer = await _customerRepository.GetByIdAsync(customerId.Value);
+            if (existingCustomer == null)
+            {
+                Console.WriteLine($"❌ Ошибка: CustomerId {customerId} не найден в таблице Customers.");
+                return;
+            }
+
+            user.CustomerId = customerId;
+            Console.WriteLine($"✅ Обновляем user {user.Id} с customerId {customerId}");
+
+            var result = await _userRepository.UpdateUserAsync(user);
+            Console.WriteLine($"Результат обновления: {result.Succeeded}");
         }
     }
 }

@@ -50,11 +50,11 @@ namespace TestFullstack.Server.Services.Auth
         {
             var user = await _authRepository.FindByEmailAsync(email);
             if (user == null)
-                return (false, "Неверный email или пароль", null);
+                return (false, "Неверный email или пароль", null)!;
 
             var result = await _authRepository.PasswordSignInAsync(email, password, rememberMe);
             if (!result.Succeeded)
-                return (false, "Неверный email или пароль", null);
+                return (false, "Неверный email или пароль", null)!;
 
             var roles = await _authRepository.GetRolesAsync(user);
             var token = await GenerateJwtToken(user, roles);
@@ -77,10 +77,10 @@ namespace TestFullstack.Server.Services.Auth
         public async Task<string> GetUserRoleAsync(string userId)
         {
             var user = await _authRepository.FindByIdAsync(userId);
-            if (user == null) return null;
+            if (user == null) return null!;
 
             var roles = await _authRepository.GetRolesAsync(user);
-            return roles.FirstOrDefault();
+            return roles.FirstOrDefault()!;
         }
 
         public async Task<string> GenerateJwtToken(ApplicationUser user, IList<string> roles)

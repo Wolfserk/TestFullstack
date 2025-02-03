@@ -13,6 +13,9 @@ using TestFullstack.Server.Entities;
 using TestFullstack.Server.Services.Auth;
 using TestFullstack.Server.Repositories.Auth;
 using TestFullstack.Server.Repositories.Customers;
+using TestFullstack.Server.Repositories.Items;
+using TestFullstack.Server.Repositories.Orders;
+using TestFullstack.Server.Repositories.Users;
 
 
 namespace TestFullstack.Server
@@ -49,8 +52,10 @@ namespace TestFullstack.Server
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IItemRepository, ItemRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
             builder.Services.AddControllers();
@@ -99,7 +104,7 @@ namespace TestFullstack.Server
                     },
                     OnTokenValidated = context =>
                     {
-                        Console.WriteLine($"Всё ок: {context.Principal.Identity.Name}");
+                        Console.WriteLine($"Всё ок: {context.Principal!.Identity!.Name}");
                         return Task.CompletedTask;
                     }
                 };

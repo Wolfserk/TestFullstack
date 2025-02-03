@@ -2,26 +2,27 @@
 using TestFullstack.Server.Data;
 using TestFullstack.Server.DTOs;
 using TestFullstack.Server.Entities;
+using TestFullstack.Server.Repositories.Items;
 
 namespace TestFullstack.Server.Services.Items
 {
     public class ItemService : IItemService
     {
-        private readonly ApplicationContext _context;
+        private readonly IItemRepository _itemRepository;
 
-        public ItemService(ApplicationContext context)
+        public ItemService(IItemRepository itemRepository)
         {
-            _context = context;
+            _itemRepository = itemRepository;
         }
 
-        public async Task<List<Item>> GetAllItemsAsync()
+        public Task<List<Item>> GetAllItemsAsync()
         {
-            return await _context.Items.ToListAsync();
+            return _itemRepository.GetAllItemsAsync();
         }
 
-        public async Task<Item> GetItemByIdAsync(Guid id)
+        public Task<Item?> GetItemByIdAsync(Guid id)
         {
-            return await _context.Items.FindAsync(id);
+            return _itemRepository.GetItemByIdAsync(id);
         }
 
         public async Task<Item> AddItemAsync(ItemDto itemDto)
@@ -34,45 +35,30 @@ namespace TestFullstack.Server.Services.Items
                 Category = itemDto.Category
             };
 
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
-            return item;
+            return await _itemRepository.AddItemAsync(item);
         }
 
-        public async Task<Item> UpdateItemAsync(Guid id, ItemDto itemDto)
+        public async Task<Item?> UpdateItemAsync(Guid id, ItemDto itemDto)
         {
-            var item = await _context.Items.FindAsync(id);
-            if (item == null) return null;
+            var existingItem = await _itemRepository.GetItemByIdAsync(id);
+            if (existingItem == null) return null;
 
-            item.Code = itemDto.Code;
-            item.Name = itemDto.Name;
-            item.Price = itemDto.Price;
-            item.Category = itemDto.Category;
+            existingItem.Code = itemDto.Code;
+            existingItem.Name = itemDto.Name;
+            existingItem.Price = itemDto.Price;
+            existingItem.Category = itemDto.Category;
 
-            await _context.SaveChangesAsync();
-            return item;
+            return await _itemRepository.UpdateItemAsync(existingItem);
         }
 
-        public async Task<bool> DeleteItemAsync(Guid id)
+        public Task<bool> DeleteItemAsync(Guid id)
         {
-            var item = await _context.Items.FindAsync(id);
-            if (item == null) return false;
-
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
-            return true;
+            return _itemRepository.DeleteItemAsync(id);
         }
 
-        public async Task<List<ItemPriceDto>> GetItemPricesAsync(List<Guid> itemIds)
+        public Task<List<ItemPriceDto>> GetItemPricesAsync(List<Guid> itemIds)
         {
-            return await _context.Items
-                .Where(i => itemIds.Contains(i.Id))
-                .Select(i => new ItemPriceDto
-                {
-                    Id = i.Id,
-                    Price = i.Price
-                })
-                .ToListAsync();
+            return _itemRepository.GetItemPricesAsync(itemIds);
         }
     }
 }

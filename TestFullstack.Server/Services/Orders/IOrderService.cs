@@ -7,12 +7,10 @@ namespace TestFullstack.Server.Services.Orders
     {
         Task<List<OrderDto>> GetAllOrdersAsync();
         Task<List<OrderDto>> GetAllUserOrdersAsync(Guid customerId);
-        Task<OrderDto> GetOrderByIdAsync(Guid id);
-        //Task AddOrderAsync(Order order);
-        //Task UpdateOrderAsync(Order order);
-        Task DeleteOrderAsync(Guid id);
+        Task<OrderDto?> GetOrderByIdAsync(Guid id);
         Task<Order> PlaceOrderAsync(Guid customerId, List<OrderItem> items);
         Task<bool> ConfirmOrderAsync(ConfirmOrderDto confirm);
         Task<bool> CompleteOrderAsync(Guid orderId);
+        Task<bool> DeleteOrderAsync(Guid id);
     }
 }

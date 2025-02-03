@@ -8,7 +8,6 @@ namespace TestFullstack.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;
@@ -18,52 +17,77 @@ namespace TestFullstack.Server.Controllers
             _itemService = itemService;
         }
 
+        /// <summary>
+        /// Получить список всех товаров
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllItems()
         {
-            return Ok(await _itemService.GetAllItemsAsync());
+            var items = await _itemService.GetAllItemsAsync();
+            return Ok(items);
         }
 
+        /// <summary>
+        /// Получить товар по ID
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemById(Guid id)
         {
             var item = await _itemService.GetItemByIdAsync(id);
-            if (item == null) return NotFound("Товар не найден");
+            if (item == null)
+                return NotFound("Товар не найден");
 
             return Ok(item);
         }
 
+        /// <summary>
+        /// Добавить новый товар (только для менеджеров)
+        /// </summary>
         [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> AddItem([FromBody] ItemDto itemDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var item = await _itemService.AddItemAsync(itemDto);
             return CreatedAtAction(nameof(GetItemById), new { id = item.Id }, item);
         }
 
+        /// <summary>
+        /// Обновить существующий товар (только для менеджеров)
+        /// </summary>
         [Authorize(Roles = "Manager")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItem(Guid id, [FromBody] ItemDto itemDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var updatedItem = await _itemService.UpdateItemAsync(id, itemDto);
-            if (updatedItem == null) return NotFound("Товар не найден");
+            if (updatedItem == null)
+                return NotFound("Товар не найден");
 
             return Ok(updatedItem);
         }
 
+        /// <summary>
+        /// Удалить товар (только для менеджеров)
+        /// </summary>
         [Authorize(Roles = "Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
             var result = await _itemService.DeleteItemAsync(id);
-            if (!result) return NotFound("Товар не найден");
+            if (!result)
+                return NotFound("Товар не найден");
 
-            return Ok("Товар успешно удален");
+            return Ok(new { message = "Товар успешно удален" });
         }
+
+        /// <summary>
+        /// Получить цены товаров по списку ID
+        /// </summary>
         [HttpPost("get-prices")]
         public async Task<IActionResult> GetItemPrices([FromBody] ItemPriceRequestDto request)
         {
