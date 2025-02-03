@@ -12,6 +12,7 @@
 
 ### Backend
 
+
 1. **Удаление папки Migrations** (если она существует) из TestFullstack.Server.
 2. **Создание миграции**:
    - Откройте Package Manager Console.
@@ -20,6 +21,11 @@
    - В той же консоли выполните: `update-database`.
 4. **Запуск приложения**:
    - Запустите проект через Visual Studio.
+  
+   P.S. при необходимости можно изменить строку подключения к БД в файле appsettings.json:   
+_"ConnectionStrings": {
+  "DefaultConnection": "Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=TFSDB222;Integrated Security=True;Pooling=False;Multiple Active Result Sets=True;Encrypt=False"
+}_
 
 ### Frontend
 
