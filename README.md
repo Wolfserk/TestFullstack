@@ -12,7 +12,7 @@
 
 ### Backend
 
-1. **Удаление папки Migrations** (если она существует).
+1. **Удаление папки Migrations** (если она существует) из TestFullstack.Server.
 2. **Создание миграции**:
    - Откройте Package Manager Console.
    - Выполните команду: `add-migration Init`.
