@@ -42,13 +42,11 @@ export const useUserStore = defineStore("user", {
         this.clearUser();
       }
     },
-        // ✅ Устанавливаем `customerId`
         setCustomerId(customerId: string) {
           this.customerId = customerId;
           localStorage.setItem("userCustomerId", customerId);
         },
 
-        // ✅ Автоматический запрос customerId после входа
         async fetchCustomerId() {
           if (!this.token || this.customerId) return;
 
@@ -58,7 +56,6 @@ export const useUserStore = defineStore("user", {
             });
 
             if (response.data && response.data.customerId) {
-              //console.log("Получен customerId:", response.data.customerId);
               this.setCustomerId(response.data.customerId);
             }
           } catch (error) {
