@@ -16,9 +16,13 @@
 1. **Удаление папки Migrations** (если она существует) из TestFullstack.Server.
 2. **Создание миграции**:
    - Откройте Package Manager Console.
-   - Выполните команду: `add-migration Init`.
+   - Выполните команду:
+      ```bash
+      add-migration Init
 3. **Применение миграции**:
-   - В той же консоли выполните: `update-database`.
+   - В той же консоли выполните:
+    ```bash
+    update-database
 4. **Запуск приложения**:
    - Запустите проект через Visual Studio.
   
