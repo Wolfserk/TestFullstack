@@ -62,7 +62,7 @@
           });
           customers.value = response.data;
         } catch (error) {
-          console.error("Ошибка при загрузке заказчиков:", error.response?.data || error.message);
+          console.error("Ошибка при загрузке заказчиков:");
         } finally {
           loading.value = false;
         }

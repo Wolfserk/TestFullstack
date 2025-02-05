@@ -115,7 +115,6 @@
       const submitAddModal = async () => {
         try {
           newUser.value.confirmPassword = newUser.value.password
-          console.log(newUser.value);
           await axios.post("https://localhost:7034/api/users/add", newUser.value, {
             headers: { Authorization: `Bearer ${userStore.token}` },
           });   

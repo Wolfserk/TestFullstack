@@ -42,7 +42,6 @@
           const response = await axios.post("https://localhost:7034/api/customers/", createCustomer.value, {
             headers: { Authorization: `Bearer ${userStore.token}` },
           });
-          console.log(response.data);
           if (response.data) {
             userStore.setCustomerId(response.data);
             emit("close");
@@ -50,7 +49,7 @@
             router.push("/");
           }
         } catch (error) {
-          console.error("Ошибка!", error.response?.data || error.message);
+          console.error("Ошибка!");
           alert("Не удалось сохранить данные заказчика.");
         }
       };

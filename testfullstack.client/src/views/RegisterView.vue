@@ -96,7 +96,7 @@
           router.push("/");
           
         } catch (error: any) {
-          console.error("Ошибка при регистрации:", error.response?.data || error.message);
+          console.error("Ошибка при регистрации");
 
           if (Array.isArray(error.response?.data)) {
             errorMessages.value = error.response.data.map((err: { description: string }) =>

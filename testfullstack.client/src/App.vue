@@ -82,10 +82,7 @@
       const userId = ref<string | null>(null);
 
       const goToCart = async () => {
-        console.log("customerId:", userStore.customerId);
-        console.log("Тип customerId:", typeof userStore.customerId);
         if (userStore.customerId === null || !userStore.customerId || userStore.customerId === "null") {
-          console.log("❌ Нет customerId, запрещаем доступ в корзину и открываем CreateCustomerModal...");
           isCustomerModalOpen.value = true;
           return;
         }
@@ -94,14 +91,12 @@
 
       watch(() => userStore.customerId, (newCustomerId) => {
         if (newCustomerId) {
-          console.log("✅ customerId обновлён, закрываем модальное окно...");
           isCustomerModalOpen.value = false;
         }
       });
 
       onMounted(() => {
         if (userStore.isAuthenticated && !userStore.customerId) {
-          console.log("🔍 Нет customerId после входа, показываем CreateCustomerModal...");
           isCustomerModalOpen.value = true;
         }
       });
@@ -120,7 +115,6 @@
       };
 
       const closeCustomerModal = () => {
-        console.log("Модальное окно закрыто");
         isCustomerModalOpen.value = false;
       };
 

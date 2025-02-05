@@ -73,7 +73,7 @@
           emit("save", editedCustomer.value);
           emit("close");
         } catch (error) {
-          console.error("Ошибка при обновлении заказчика:", error.response?.data || error.message);
+          console.error("Ошибка при обновлении заказчика");
         }
       };
 
